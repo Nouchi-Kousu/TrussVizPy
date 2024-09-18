@@ -29,18 +29,18 @@ class Load(TypedDict):
     Fy: float
 
 # 前端通过GET方法传递的桁架结构相关的输入数据
-class Frontend_Input(TypedDict):
+class Frontend_Input_Data(TypedDict):
     point: List[Point]
     line: List[Line]
     load: List[Load]
 
 # 后端进行桁架结构计算后生成的结果数据
-class Calculation_Result(TypedDict):
+class Calculation_Result_Data(TypedDict):
     point: List[Point]
     line: List[Line]
     load: List[Load]
 
 # 后端将计算结果处理后返回给前端，用于可视化展示的结果数据
-class Visualization(TypedDict):
+class Visualization_Data(TypedDict):
     point: List[Point]
     line: List[Line_Force]
