@@ -1,20 +1,21 @@
-from typing import List, TypedDict
+from typing import List, Literal, NotRequired, TypedDict
 
 
 # 点坐标数据结构
 class Point(TypedDict):
     x: float
     y: float
-    is_Constraint: bool
+    # 约束类型，0为无约束，1为滑动铰支座，2为固定铰支座
+    Constraint_Type: Literal[0, 1, 2]
+    theta: NotRequired[float]
 
 # 杆件数据结构
 class Line(TypedDict):
     start: int
     end: int
-    E: float
-    A: float
     L: float
     k: float
+    theta: float
 
 # 应力杆件数据结构
 class Line_Force(TypedDict):

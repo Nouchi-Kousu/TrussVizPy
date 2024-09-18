@@ -1,9 +1,8 @@
-from typing import List
-import types
+from data_types import Calculation_Result_Data, Visualization_Data, Line_Force, Line
 from scipy.spatial.distance import euclidean
 
 
-def Calculation_Result_to_Visualization(calculation_result: types.Calculation_Result_Data):
+def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
     points = calculation_result['point'].copy()
 
     def Line_to_Line_Force(line: Line) -> Line_Force:
@@ -14,10 +13,10 @@ def Calculation_Result_to_Visualization(calculation_result: types.Calculation_Re
 
     line_forces = [Line_to_Line_Force(line) for line in calculation_result['line']]
 
-    visualization_data: Visualization_Data = {
-        'point': calculation_result['point'].copy(),
-        'line': line_forces
-    }
+    visualization_data = Visualization_Data(
+        point=calculation_result['point'].copy(),
+        line=line_forces
+    )
 
     return visualization_data
 
