@@ -1,4 +1,4 @@
-from typing import List, Literal, NotRequired, TypedDict
+from typing import List, Literal, NotRequired, Tuple, TypedDict
 
 
 # 点坐标数据结构
@@ -11,16 +11,14 @@ class Point(TypedDict):
 
 # 杆件数据结构
 class Line(TypedDict):
-    start: int
-    end: int
+    points: Tuple[int, int]
     L: float
     k: float
     theta: float
 
 # 应力杆件数据结构
 class Line_Force(TypedDict):
-    start: int
-    end: int
+    points: Tuple[int, int]
     sigma: float
 
 # 载荷数据结构
@@ -34,6 +32,7 @@ class Frontend_Input_Data(TypedDict):
     point: List[Point]
     line: List[Line]
     load: List[Load]
+    constraint_nums: int
 
 # 后端进行桁架结构计算后生成的结果数据
 class Calculation_Result_Data(TypedDict):
