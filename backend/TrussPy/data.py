@@ -1,6 +1,27 @@
-from .data_types import Calculation_Result_Data, Visualization_Data, Line_Force, Line
+from .data_types import Calculation_Result_Data, Visualization_Data, Line_Force, Line, Input_Data, Line_input, Frontend_Input_Data
 from scipy.spatial.distance import euclidean
+import numpy as np
 
+
+def Input_to_Frontend_Input(input_data: Input_Data):
+    points = input_data['point'].copy()
+
+    def Line_Input_to_Line(line_input: Line_input) -> Line:
+        start = points[line_input['points'][0]]
+        end = points[line_input['points'][1]]
+        theta = np.arctan2(end['y'] - start['y'], end['x'] - start['x'])
+        L = euclidean([start['x'],start['y']], [end['x'],end['y']])
+        k = line_input['A'] * line_input['E'] / L
+        return Line(points=line_input['points'], L=L,E=line_input['E'], k=k, theta=theta)
+
+    lines = [Line_Input_to_Line(line_input) for line_input in input_data['line']]
+
+    return Frontend_Input_Data(
+        constraint_nums=input_data['constraint_nums'],
+        point=points,
+        line=lines,
+        load=input_data['load']
+    )
 
 def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
     points = calculation_result['point'].copy()
@@ -8,7 +29,7 @@ def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_D
     def Line_to_Line_Force(line: Line) -> Line_Force:
         start = points[line['points'][0]]
         end = points[line['points'][1]]
-        sigma = (euclidean([start['x'],start['y']], [end['x'],end['y']]) - line['L']) / line['L']
+        sigma = (euclidean([start['x'],start['y']], [end['x'],end['y']]) - line['L']) / line['L'] * line['E']
         return Line_Force(points=(line['points'][0],line['points'][1]), sigma=sigma)
 
     line_forces = [Line_to_Line_Force(line) for line in calculation_result['line']]
