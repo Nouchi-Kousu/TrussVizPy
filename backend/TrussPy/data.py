@@ -1,7 +1,6 @@
 import math
 from .data_types import Calculation_Result_Data, Visualization_Data, Line_Force, Line, Input_Data, Line_input, Frontend_Input_Data
 from scipy.spatial.distance import euclidean
-import numpy as np
 
 
 def Input_to_Frontend_Input(input_data: Input_Data):

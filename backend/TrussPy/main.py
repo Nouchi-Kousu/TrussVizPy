@@ -27,8 +27,8 @@ def main(input_data: Frontend_Input_Data):
             i = point_map.get_idx(line['points'][0])
             j = point_map.get_idx(line['points'][1])
             esm = Get_Element_Stiffness_Matrix(line['k'], line['theta'])
-            global_stiffness_matrix[i*2:i*2+2, j*2:j*2+2] += esm
-            global_stiffness_matrix[j*2:j*2+2, i*2:i*2+2] += esm
+            global_stiffness_matrix[i*2:i*2+2, j*2:j*2+2] -= esm
+            global_stiffness_matrix[j*2:j*2+2, i*2:i*2+2] -= esm
 
     load_matrix = np.zeros((idx_num*2, 1))
     # 循环荷载构建载荷矩阵
@@ -42,7 +42,7 @@ def main(input_data: Frontend_Input_Data):
 
     for i in range(idx_num):
         point_num = point_map.get_point(i)
-        input_data['point'][point_num]['x'] += point_displacement[i*2][0]
-        input_data['point'][point_num]['y'] += point_displacement[i*2+1][0]
+        input_data['point'][point_num]['x'] += float(point_displacement[i*2][0])
+        input_data['point'][point_num]['y'] += float(point_displacement[i*2+1][0])
 
-    return Calculation_Result_to_Visualization(input_data)
+    return Calculation_Result_to_Visualization(input_data), point_displacement

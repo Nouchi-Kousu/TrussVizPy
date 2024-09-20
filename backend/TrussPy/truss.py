@@ -13,9 +13,12 @@ def Get_Element_Stiffness_Matrix(k: float, theta: float) -> np.ndarray:
     返回值：
     K_matrix: 杆件单元刚度矩阵
     '''
+    sin = np.sin(theta)
+    cos = np.cos(theta)
+    csk = sin * cos * k
     esm = np.array([
-        [k * np.cos(theta) ** 2, k * np.cos(theta) * np.sin(theta)],
-        [k * np.cos(theta) * np.sin(theta), k * np.sin(theta) ** 2]
+        [k * cos ** 2, csk],
+        [csk, k * sin ** 2]
     ])
     return esm
 
