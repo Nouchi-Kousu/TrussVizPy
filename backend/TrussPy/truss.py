@@ -13,10 +13,12 @@ def Get_Element_Stiffness_Matrix(k: float, theta: float) -> np.ndarray:
     返回值：
     K_matrix: 杆件单元刚度矩阵
     '''
-    return np.array([
+    esm = np.array([
         [k * np.cos(theta) ** 2, k * np.cos(theta) * np.sin(theta)],
         [k * np.cos(theta) * np.sin(theta), k * np.sin(theta) ** 2]
     ])
+    return esm
+
 
 def LULT_Decomposition_Solver(gsm: np.ndarray, b: np.ndarray) -> np.ndarray:
     # TODO 待实现
