@@ -35,9 +35,32 @@
     }
 
     .left {
-        width: 50px;
+        width: 60px;
         height: 100%;
         background-color: beige;
+        .leftButton {
+            margin: 0;
+            padding: 0;
+            li {
+                // display: block;
+                list-style-type: none;
+                background-color: rgb(190, 125, 45);
+                width: 40px;
+                height: 40px;
+                margin: 10px;
+                border-radius: 2px;
+                background-size: cover;
+            }
+            li:not(.logo) {
+                border: 1px solid black;
+            }
+            li:hover:not(.logo) {
+                box-shadow: 0px 0px 3px rgb(102, 102, 102);
+            }
+            .logo {
+                background-image: url('../assets/test.jpg');
+            }
+        }
     }
 }
 
