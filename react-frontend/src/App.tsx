@@ -1,12 +1,15 @@
 import { useRef, useState } from "react"
-import Truss from './page/Truss/Truss'
+import TrussMain from './page/Truss/Main'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 const App = () => {
 
     return (
-        <div>
-            <Truss />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/truss/*" element={<TrussMain />} />
+            </Routes>
+        </Router>
     )
 }
 

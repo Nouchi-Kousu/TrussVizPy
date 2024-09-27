@@ -14,8 +14,8 @@ const Truss = () => {
     
     return (
         <div className="truss">
-            <Draw />
-            <Show />
+            <div className="drawWin"><Draw /></div>
+            <div className="showWin"><Show /></div>
         </div>
     )
 }

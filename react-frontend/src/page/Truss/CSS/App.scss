@@ -3,25 +3,46 @@
     height: 100vh;
     display: flex;
     background-color: bisque;
-    .draw {
+
+    .drawWin {
         height: 100%;
         width: 60%;
-        background-color: aqua;
-        display: flex;
-        .head {
-            width: 100%;
-            height: 40px;
-            background-color: aquamarine;
-        }
-        .left {
-            width: 50px;
-            height: 100%;
-            background-color: beige;
-        }
+        background-color: brown;
     }
-    .show {
+
+    .showWin {
         height: 100%;
         width: 40%;
-        background-color: blue;
+        background-color: chocolate;
     }
+}
+
+.only {
+    width: 100vw;
+    height: 100vh;
+}
+
+.draw {
+    height: 100%;
+    width: 100%;
+    background-color: aqua;
+    display: flex;
+
+    .head {
+        width: 100%;
+        height: 40px;
+        background-color: aquamarine;
+    }
+
+    .left {
+        width: 50px;
+        height: 100%;
+        background-color: beige;
+    }
+}
+
+.show {
+    height: 100%;
+    width: 100%;
+    background-color: blue;
 }
