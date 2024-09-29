@@ -1,12 +1,19 @@
-import Head from './Head'
+import { useState } from "react";
+import Head from "./Head";
+import { selectedPointContext } from "./context";
 
 const Right = () => {
-    return (
-        <div className='right'>
-            <Head />
-            <canvas className='canvas'></canvas>
-        </div>
-    )
-}
+    const [selectedPoint, setSelectedPoint] = useState(null); // 存储选中的圆
 
-export default Right
+    return (
+        <div className="right">
+            <selectedPointContext.Provider
+                value={[selectedPoint, setSelectedPoint]}>
+                <Head />
+                <canvas className="canvas"></canvas>
+            </selectedPointContext.Provider>
+        </div>
+    );
+};
+
+export default Right;

@@ -1,11 +1,17 @@
 import { useContext } from "react"
-import {penTypeConText} from "./context"
+import {penTypeConText, selectedPointContext} from "./context"
 
 const Head = () => {
     const [penType] = useContext(penTypeConText)
-    let headTable
+    const [selectedPoint] = useContext(selectedPointContext)
+    let headTable = <></>
     switch (penType) {
         case "choose":
+            if (selectedPoint) {
+                headTable = <>
+                    111
+                </>
+            }
             break
         case "move":
             break
@@ -19,6 +25,7 @@ const Head = () => {
     return (
         <div className="head">
             <li className={penType}></li>
+            {headTable}
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import Right from "./Right";
 import Left from "./Left";
-import {penTypeConText} from './context'
-import { createContext, useState } from "react";
+import { penTypeConText } from './context'
+import { useState } from "react";
 
 const Draw = () => {
     const [penType, setPenType] = useState("choose");

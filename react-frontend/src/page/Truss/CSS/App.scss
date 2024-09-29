@@ -52,11 +52,12 @@ html, body {
         width: 100%;
         height: 40px;
         background-color: aquamarine;
+        display: flex;
         li {
             list-style-type: none;
             width: 40px;
             height: 40px;
-            background-color: rgb(255, 255, 255);
+            // background-color: rgb(255, 255, 255);
             margin-left: 10px;
         }
     }
@@ -71,18 +72,15 @@ html, body {
             li {
                 // display: block;
                 list-style-type: none;
-                background-color: rgb(190, 125, 45);
+                // background-color: rgb(190, 125, 45);
                 width: 40px;
                 height: 40px;
                 margin: 10px;
                 border-radius: 2px;
                 background-size: cover;
             }
-            li:not(.logo) {
-                border: 1px solid black;
-            }
             li:hover:not(.logo) {
-                box-shadow: 0px 0px 3px rgb(102, 102, 102);
+                background-color: rgb(102, 102, 102);
             }
             .logo {
                 background-image: url('../assets/test.jpg');
@@ -96,3 +94,34 @@ html, body {
     width: 100%;
     background-color: blue;
 }
+
+li {
+    &.choose {
+        background-color: rgb(255, 0, 0);
+    }
+    &.move {
+        background-color: rgb(255, 174, 0);
+    }
+    &.grab {
+        background-color: rgb(255, 251, 0);
+    }
+    &.delete {
+        background-color: rgb(119, 255, 0);
+    }
+    &.point {
+        background-color: rgb(0, 255, 76);
+    }
+    &.line {
+        background-color: rgb(0, 255, 242);
+    }
+    &.constraint2 {
+        background-color: rgb(0, 149, 255);
+    }
+    &.constraint1 {
+        background-color: rgb(38, 0, 255);
+    }
+    &.load {
+        background-color: rgb(255, 0, 255);
+    }
+}
+
