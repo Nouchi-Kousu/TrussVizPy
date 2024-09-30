@@ -4,7 +4,6 @@ import {penTypeContext} from './context'
 const Left = () => {
     const button = [
         "choose",
-        "move",
         "grab",
         "delete",
         "point",

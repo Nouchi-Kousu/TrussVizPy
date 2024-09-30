@@ -13,8 +13,6 @@ const Head = ({ selectedPointSet, pointsSet, canvasRef }) => {
         if (selectedPoint) {
             headTable = <>111</>;
         }
-    } else if (penType === "move") {
-        // 不做任何操作
     } else if (penType === "grab") {
         headTable = <></>;
     } else if (penType === "delete") {
