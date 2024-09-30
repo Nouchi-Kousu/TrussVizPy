@@ -1,6 +1,6 @@
 import Right from "./Right";
 import Left from "./Left";
-import { penTypeConText } from './context'
+import { penTypeContext } from './context'
 import { useState } from "react";
 
 const Draw = () => {
@@ -8,10 +8,10 @@ const Draw = () => {
 
     return (
         <div className="draw">
-            <penTypeConText.Provider value={[penType, setPenType]}>
+            <penTypeContext.Provider value={[penType, setPenType]}>
                 <Left />
                 <Right />
-            </penTypeConText.Provider>
+            </penTypeContext.Provider>
         </div>
     );
 };

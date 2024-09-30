@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import {penTypeConText} from './context'
+import {penTypeContext} from './context'
 
 const Left = () => {
     const button = [
@@ -13,10 +13,10 @@ const Left = () => {
         "constraint1",
         "load",
     ];
-    const [, setPenType] = useContext(penTypeConText)
+    const [, setPenType] = useContext(penTypeContext)
     const buttons = button.map((item, idx) => (
         <li className={item} key={item} onClick={() => setPenType(item)}>
-            {idx}
+            {item}
         </li>
     ));
     return (
