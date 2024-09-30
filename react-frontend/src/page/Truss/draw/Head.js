@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { penTypeContext, selectedPointContext } from "./context";
 
-const Head = (selectedPointSet, pointsSet) => {
+const Head = ({selectedPointSet, pointsSet}) => {
     const [penType] = useContext(penTypeContext);
-    const selectedPoint = selectedPointSet;
-    const points = pointsSet;
+    const [selectedPoint,] = selectedPointSet;
+    const [points,] = pointsSet;
     let headTable = <></>;
     if (penType === "choose") {
         if (selectedPoint) {

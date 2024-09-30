@@ -72,8 +72,8 @@ const Right = () => {
     return (
         <div className="right">
                     <Head
-                        selectedPointSet={selectedPoint}
-                        pointsSet={points}
+                        selectedPointSet={[selectedPoint, setSelectedPoint]}
+                        pointsSet={[points, setPoints]}
                     />
                     <canvas
                         ref={canvasRef}
