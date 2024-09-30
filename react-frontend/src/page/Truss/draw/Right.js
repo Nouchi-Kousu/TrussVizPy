@@ -16,13 +16,13 @@ const Right = () => {
             const context = canvas.getContext("2d");
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
-            context.translate(50, canvas.height-50);
+            context.translate(50, canvas.height - 50);
             context.scale(1, -1);
             context.beginPath();
             context.moveTo(0, 0);
-            context.lineTo(400, 0);
+            context.lineTo(100, 0);
             context.moveTo(0, 0);
-            context.lineTo(0, 400);
+            context.lineTo(0, 100);
             context.stroke();
         }
     };
@@ -38,7 +38,13 @@ const Right = () => {
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(-50, -50, canvas.width - 50, canvas.height - 50);
+        context.beginPath();
+        context.moveTo(0, 0);
+        context.lineTo(100, 0);
+        context.moveTo(0, 0);
+        context.lineTo(0, 100);
+        context.stroke();
 
         points.forEach((point, idx) => {
             console.log("render");
@@ -79,16 +85,16 @@ const Right = () => {
 
     return (
         <div className="right">
-                    <Head
-                        selectedPointSet={[selectedPoint, setSelectedPoint]}
-                        pointsSet={[points, setPoints]}
-                        canvasRef={canvasRef}
-                    />
-                    <canvas
-                        ref={canvasRef}
-                        className="canvas"
-                        onMouseDown={handleMouseDown}
-                    ></canvas>
+            <Head
+                selectedPointSet={[selectedPoint, setSelectedPoint]}
+                pointsSet={[points, setPoints]}
+                canvasRef={canvasRef}
+            />
+            <canvas
+                ref={canvasRef}
+                className="canvas"
+                onMouseDown={handleMouseDown}
+            ></canvas>
         </div>
     );
 };
