@@ -1,10 +1,13 @@
 import { useContext } from "react";
 import { penTypeContext, selectedPointContext } from "./context";
 
-const Head = ({selectedPointSet, pointsSet}) => {
+const Head = ({ selectedPointSet, pointsSet, canvasRef }) => {
     const [penType] = useContext(penTypeContext);
-    const [selectedPoint,] = selectedPointSet;
-    const [points,] = pointsSet;
+    const [selectedPoint] = selectedPointSet;
+    const [points] = pointsSet;
+    const canvas = canvasRef.current;
+    // let canvasWidth = canvas.width;
+    // const canvasHeight = canvas.height;
     let headTable = <></>;
     if (penType === "choose") {
         if (selectedPoint) {
@@ -17,7 +20,7 @@ const Head = ({selectedPointSet, pointsSet}) => {
     } else if (penType === "delete") {
         // 不做任何操作
     } else if (penType === "point") {
-        console.log(selectedPoint)
+        console.log(selectedPoint);
         if (selectedPoint !== -1) {
             const point = points[selectedPoint];
             headTable = (

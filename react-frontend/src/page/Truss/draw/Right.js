@@ -13,8 +13,17 @@ const Right = () => {
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
         if (canvas) {
+            const context = canvas.getContext("2d");
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
+            context.translate(50, canvas.height-50);
+            context.scale(1, -1);
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(400, 0);
+            context.moveTo(0, 0);
+            context.lineTo(0, 400);
+            context.stroke();
         }
     };
 
@@ -31,7 +40,6 @@ const Right = () => {
         const context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 绘制已有的圆
         points.forEach((point, idx) => {
             console.log("render");
             context.beginPath();
@@ -50,8 +58,8 @@ const Right = () => {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
+            x: event.clientX - rect.left - 50,
+            y: canvas.height - (event.clientY - rect.top) - 50,
         };
     };
 
@@ -74,6 +82,7 @@ const Right = () => {
                     <Head
                         selectedPointSet={[selectedPoint, setSelectedPoint]}
                         pointsSet={[points, setPoints]}
+                        canvasRef={canvasRef}
                     />
                     <canvas
                         ref={canvasRef}
