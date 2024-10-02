@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     margin: 0;
     height: 100%;
     overflow: hidden;
@@ -53,6 +54,11 @@ html, body {
         height: 40px;
         background-color: aquamarine;
         display: flex;
+        user-select: none; /* 禁止文字选择 */
+        -webkit-user-select: none; /* 适用于Safari */
+        -moz-user-select: none; /* 适用于旧版本的Firefox */
+        -ms-user-select: none; /* 适用于IE 10+ */
+
         li {
             list-style-type: none;
             width: 40px;
@@ -83,7 +89,7 @@ html, body {
                 background-color: rgb(102, 102, 102);
             }
             .logo {
-                background-image: url('../assets/test.jpg');
+                background-image: url("../assets/test.jpg");
             }
         }
     }
@@ -121,4 +127,3 @@ li {
         background-color: rgb(255, 0, 255);
     }
 }
-

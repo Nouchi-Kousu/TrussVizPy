@@ -11,10 +11,12 @@ const Right = () => {
         x: 0,
         y: 0,
     }); // 鼠标位置
-    const [isdragging, setIsDragging] = useState(false);
-    const [zoomScale, setZoomScale] = useState(1);
+    const [isDragging, setIsDragging] = useState(false);
+    const [zoomScale, setZoomScale] = useState(10);
     const [offset, setOffset] = useState({ x: 50, y: 50 }); // 原点平移量
-    const [isGrab, setIsGrab] = useState(false);
+    const [mouseDown, setMouseDown] = useState(false);
+    const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+    const [isAltPressed, setAltPressed] = useState(false);
 
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
@@ -51,15 +53,22 @@ const Right = () => {
         ); // 清空整个画布
         context.beginPath();
         context.moveTo(0, 0);
-        context.lineTo(100, 0); // x 轴
+        context.lineTo(60, 0); // x 轴
         context.moveTo(0, 0);
-        context.lineTo(0, 100); // y 轴
+        context.lineTo(0, 60); // y 轴
         context.stroke();
 
         // 绘制点
         points.forEach((point, idx) => {
             context.beginPath();
-            context.arc(point.x, point.y, 10, 0, Math.PI * 2, true);
+            context.arc(
+                point.x * zoomScale,
+                point.y * zoomScale,
+                10,
+                0,
+                Math.PI * 2,
+                true
+            );
             context.fillStyle = idx === selectedPoint ? "red" : "blue";
             context.fill();
         });
@@ -84,43 +93,105 @@ const Right = () => {
     };
 
     const handleMouseDown = (event) => {
-        const { x, y } = getMousePosition(event);
-        const clickedPointIndex = points.findIndex(
-            (circle) => Math.hypot(circle.x - x, circle.y - y) < 10
-        );
-        setSelectedPoint(clickedPointIndex);
+        setMouseDown(true);
         if (penType === "point") {
+            const { x, y } = getMousePosition(event);
+            const clickedPointIndex = points.findIndex(
+                (circle) => Math.hypot(circle.x - x, circle.y - y) < 10
+            );
+            setSelectedPoint(clickedPointIndex);
             if (clickedPointIndex === -1) {
                 setSelectedPoint(points.length);
-                setPoints([...points, { x: x, y: y }]);
+                setPoints([...points, { x: x / zoomScale, y: y / zoomScale }]);
             }
         }
         if (penType === "grab") {
-            setIsGrab(true);
             const { x, y } = getAbsoluteMousePosition(event);
             setAbsoluteMousePosition({ x, y });
         }
     };
 
     const handleMouseMove = (event) => {
-        // if (isdragging) {
-        //     const { x, y } = getMousePosition(event);
-        //     setMousePosition({ x, y });
-        // }
-        if (isGrab) {
-            const { x, y } = getAbsoluteMousePosition(event);
-            setOffset({
-                x: offset.x + x - absoluteMousePosition.x,
-                y: offset.y + y - absoluteMousePosition.y,
-            });
-            setAbsoluteMousePosition({ x, y });
-            console.log(offset);
+        if (mouseDown) {
+            if (penType === "point") {
+                const { x, y } = getMousePosition(event);
+                setPoints(
+                    points.map((point, idx) =>
+                        idx === selectedPoint
+                            ? { x: x / zoomScale, y: y / zoomScale }
+                            : point
+                    )
+                );
+            }
+            if (penType === "grab") {
+                const { x, y } = getAbsoluteMousePosition(event);
+                setOffset({
+                    x: offset.x + x - absoluteMousePosition.x,
+                    y: offset.y + y - absoluteMousePosition.y,
+                });
+                setAbsoluteMousePosition({ x, y });
+            }
         }
     };
 
     const handleMouseUp = () => {
-        setIsGrab(false);
+        setMouseDown(false);
     };
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+
+        const handleWheel = (event) => {
+            event.preventDefault(); // 允许调用 preventDefault
+            const delta = event.deltaY;
+            if (isAltPressed && isCtrlPressed) {
+                const zoomFactor = delta > 0 ? 0.9 : 1.1;
+                setZoomScale(zoomScale * zoomFactor);
+                const { x, y } = getMousePosition(event);
+                setOffset({
+                    x: offset.x + (1 - zoomFactor) * x,
+                    y: offset.y + (1 - zoomFactor) * y,
+                });
+            } else if (isCtrlPressed) {
+            }
+        };
+
+        // 手动添加 wheel 事件监听器，设置 passive 为 false
+        canvas.addEventListener("wheel", handleWheel, { passive: false });
+
+        // 组件卸载时移除事件监听器
+        return () => {
+            canvas.removeEventListener("wheel", handleWheel);
+        };
+    }, [isCtrlPressed, isAltPressed, zoomScale, offset]);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Control") {
+                setIsCtrlPressed(true);
+            } else if (event.key === "Alt") {
+                setAltPressed(true);
+            }
+        };
+
+        const handleKeyUp = (event) => {
+            if (event.key === "Control") {
+                setIsCtrlPressed(false);
+            } else if (event.key === "Alt") {
+                setAltPressed(false);
+            }
+        };
+
+        // 绑定键盘按下和抬起事件
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+
+        // 清理事件监听器
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, []);
 
     return (
         <div className="right">
