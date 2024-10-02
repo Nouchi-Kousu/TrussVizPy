@@ -14,9 +14,10 @@ const Right = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [zoomScale, setZoomScale] = useState(10);
     const [offset, setOffset] = useState({ x: 50, y: 50 }); // 原点平移量
-    const [mouseDown, setMouseDown] = useState(false);
+    const [mouseDown, setMouseDown] = useState(-1);
     const [isCtrlPressed, setIsCtrlPressed] = useState(false);
     const [isAltPressed, setAltPressed] = useState(false);
+    const [isShiftPressed, setIsShiftPressed] = useState(false);
 
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
@@ -44,7 +45,6 @@ const Right = () => {
         context.translate(offset.x, canvas.height - offset.y); // 平移原点
         context.scale(1, -1); // 翻转 y 轴
 
-        // 绘制坐标轴（仅用于测试）
         context.clearRect(
             -canvas.width,
             -canvas.height,
@@ -72,7 +72,7 @@ const Right = () => {
             context.fillStyle = idx === selectedPoint ? "red" : "blue";
             context.fill();
         });
-    }, [points, selectedPoint, offset, zoomScale]); // 当原点或缩放发生变化时，重新绘制
+    }, [points, selectedPoint, offset, zoomScale]);
 
     const getMousePosition = (event) => {
         const canvas = canvasRef.current;
@@ -93,26 +93,36 @@ const Right = () => {
     };
 
     const handleMouseDown = (event) => {
-        setMouseDown(true);
-        if (penType === "point") {
-            const { x, y } = getMousePosition(event);
-            const clickedPointIndex = points.findIndex(
-                (circle) => Math.hypot(circle.x - x, circle.y - y) < 10
-            );
-            setSelectedPoint(clickedPointIndex);
-            if (clickedPointIndex === -1) {
-                setSelectedPoint(points.length);
-                setPoints([...points, { x: x / zoomScale, y: y / zoomScale }]);
+        event.preventDefault();
+        if (event.button === 0) {
+            setMouseDown(0);
+            if (penType === "point") {
+                const { x, y } = getMousePosition(event);
+                const clickedPointIndex = points.findIndex(
+                    (circle) => Math.hypot(circle.x - x, circle.y - y) < 10
+                );
+                setSelectedPoint(clickedPointIndex);
+                if (clickedPointIndex === -1) {
+                    setSelectedPoint(points.length);
+                    setPoints([
+                        ...points,
+                        { x: x / zoomScale, y: y / zoomScale },
+                    ]);
+                }
             }
-        }
-        if (penType === "grab") {
+            if (penType === "grab") {
+                const { x, y } = getAbsoluteMousePosition(event);
+                setAbsoluteMousePosition({ x, y });
+            }
+        } else if (event.button === 1) {
             const { x, y } = getAbsoluteMousePosition(event);
             setAbsoluteMousePosition({ x, y });
+            setMouseDown(2);
         }
     };
 
     const handleMouseMove = (event) => {
-        if (mouseDown) {
+        if (mouseDown === 0) {
             if (penType === "point") {
                 const { x, y } = getMousePosition(event);
                 setPoints(
@@ -131,21 +141,29 @@ const Right = () => {
                 });
                 setAbsoluteMousePosition({ x, y });
             }
+        } else if (mouseDown === 2) {
+            const { x, y } = getAbsoluteMousePosition(event);
+            setOffset({
+                x: offset.x + x - absoluteMousePosition.x,
+                y: offset.y + y - absoluteMousePosition.y,
+            });
+            setAbsoluteMousePosition({ x, y });
         }
     };
 
     const handleMouseUp = () => {
-        setMouseDown(false);
+        setMouseDown(-1);
     };
 
     useEffect(() => {
         const canvas = canvasRef.current;
 
         const handleWheel = (event) => {
-            event.preventDefault(); // 允许调用 preventDefault
+            event.preventDefault();
             const delta = event.deltaY;
             if (isAltPressed && isCtrlPressed) {
-                const zoomFactor = delta > 0 ? 0.9 : 1.1;
+                const alpha = isShiftPressed ? 0.3 : 0.1;
+                const zoomFactor = delta > 0 ? 1 - alpha : 1 + alpha;
                 setZoomScale(zoomScale * zoomFactor);
                 const { x, y } = getMousePosition(event);
                 setOffset({
@@ -153,6 +171,19 @@ const Right = () => {
                     y: offset.y + (1 - zoomFactor) * y,
                 });
             } else if (isCtrlPressed) {
+                const offsetNum = isShiftPressed ? 100 : 10;
+                const offsetStep = delta > 0 ? -offsetNum : offsetNum;
+                setOffset({
+                    x: offset.x + offsetStep,
+                    y: offset.y,
+                });
+            } else {
+                const offsetNum = isShiftPressed ? 100 : 10;
+                const offsetStep = delta > 0 ? -offsetNum : offsetNum;
+                setOffset({
+                    x: offset.x,
+                    y: offset.y + offsetStep,
+                });
             }
         };
 
@@ -171,6 +202,8 @@ const Right = () => {
                 setIsCtrlPressed(true);
             } else if (event.key === "Alt") {
                 setAltPressed(true);
+            } else if (event.key === "Shift") {
+                setIsShiftPressed(true);
             }
         };
 
@@ -179,6 +212,8 @@ const Right = () => {
                 setIsCtrlPressed(false);
             } else if (event.key === "Alt") {
                 setAltPressed(false);
+            } else if (event.key === "Shift") {
+                setIsShiftPressed(false);
             }
         };
 
