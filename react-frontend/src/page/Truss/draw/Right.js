@@ -136,6 +136,21 @@ const Right = () => {
             setPoints(points.filter((_, idx) => idx !== delPoint));
             setDelPoint(-1);
             setSelectedPoint(-1);
+            setLines(
+                lines
+                    .filter(
+                        (line) =>
+                            !line.points.some((point) => point === delPoint)
+                    )
+                    .map((line) => {
+                        return {
+                            ...line,
+                            points: line.points.map((point) =>
+                                point > delPoint ? point - 1 : point
+                            ),
+                        };
+                    })
+            );
         }
     }, [delPoint]);
 
@@ -167,7 +182,11 @@ const Right = () => {
                 // 画线逻辑
                 const clickedPointIndex = getSelectedPoint(event);
                 const { x, y } = getMousePosition(event);
-                if (clickedPointIndex !== -1 && isDrawLine) {
+                if (
+                    clickedPointIndex !== -1 &&
+                    isDrawLine &&
+                    clickedPointIndex !== selectedPoint
+                ) {
                     setLines(
                         lines.map((line, idx) =>
                             idx === selectedLine
@@ -182,7 +201,11 @@ const Right = () => {
                         )
                     );
                     setIsDrawLine(false);
-                } else if (clickedPointIndex !== -1) {
+                    setSelectedPoint(-1);
+                } else if (
+                    clickedPointIndex !== -1 &&
+                    clickedPointIndex !== selectedPoint
+                ) {
                     setSelectedPoint(clickedPointIndex);
                     setSelectedLine(lines.length);
                     setLines([
