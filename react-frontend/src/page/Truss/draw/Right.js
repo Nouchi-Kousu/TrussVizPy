@@ -191,12 +191,12 @@ const Right = () => {
                         lines.map((line, idx) =>
                             idx === selectedLine
                                 ? {
-                                      ...line,
-                                      points: [
-                                          line.points[0],
-                                          clickedPointIndex,
-                                      ],
-                                  }
+                                    ...line,
+                                    points: [
+                                        line.points[0],
+                                        clickedPointIndex,
+                                    ],
+                                }
                                 : line
                         )
                     );
@@ -259,9 +259,9 @@ const Right = () => {
                 lines.map((line, idx) =>
                     idx === selectedLine
                         ? {
-                              ...line,
-                              points: [line.points[0], { x: x, y: y }],
-                          }
+                            ...line,
+                            points: [line.points[0], { x: x, y: y }],
+                        }
                         : line
                 )
             );
