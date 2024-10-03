@@ -12,7 +12,8 @@ def Input_to_Frontend_Input(input_data: Input_Data):
         theta = math.atan2(end['y'] - start['y'], end['x'] - start['x'])
         L = euclidean([start['x'], start['y']], [end['x'], end['y']])
         k = line_input['A'] * line_input['E'] / L
-        return Line(points=line_input['points'], L=L, E=line_input['E'], k=k, theta=theta)
+        m = line_input['rho'] * L * line_input['A']
+        return Line(points=line_input['points'], L=L, E=line_input['E'], k=k, theta=theta, m=m)
 
     lines = [Line_Input_to_Line(line_input)
              for line_input in input_data['line']]
