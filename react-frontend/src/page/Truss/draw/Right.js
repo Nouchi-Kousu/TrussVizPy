@@ -23,7 +23,8 @@ const Right = () => {
     const [lineMakingsIdx, setLineMakingIdx] = useState(-1);
     const [lines, setLines] = useState([]); // 储存杆件
     const [selectedLine, setSelectedLine] = useState(-1); // 选中的杆件编号
-    
+    const [isDrawLine, setIsDrawLine] = useState(false);
+
     // 更改canvas大小
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
@@ -96,7 +97,7 @@ const Right = () => {
             context.arc(
                 point.x * zoomScale,
                 point.y * zoomScale,
-                10,
+                5,
                 0,
                 Math.PI * 2,
                 true
@@ -109,8 +110,19 @@ const Right = () => {
             context.beginPath();
             const start = line.points[0];
             const end = line.points[1];
-            context.moveTo(points[start].x * zoomScale, points[start].y * zoomScale);
+            context.moveTo(
+                points[start].x * zoomScale,
+                points[start].y * zoomScale
+            );
             // TODO 线绘制
+            if (typeof end === "number") {
+                context.lineTo(
+                    points[end].x * zoomScale,
+                    points[end].y * zoomScale
+                );
+            } else {
+                context.lineTo(end.x, end.y);
+            }
             context.strokeStyle = idx === selectedLine ? "red" : "black";
             context.lineWidth = 2;
             context.stroke();
@@ -133,7 +145,6 @@ const Right = () => {
         if (event.button === 0) {
             // 左键逻辑
             setMouseDown(0);
-            console.log(isSpacePressed);
             if (isSpacePressed || penType === "grab") {
                 const { x, y } = getAbsoluteMousePosition(event);
                 setAbsoluteMousePosition({ x, y });
@@ -155,6 +166,31 @@ const Right = () => {
             } else if (penType === "line") {
                 // 画线逻辑
                 const clickedPointIndex = getSelectedPoint(event);
+                const { x, y } = getMousePosition(event);
+                if (clickedPointIndex !== -1 && isDrawLine) {
+                    setLines(
+                        lines.map((line, idx) =>
+                            idx === selectedLine
+                                ? {
+                                      ...line,
+                                      points: [
+                                          line.points[0],
+                                          clickedPointIndex,
+                                      ],
+                                  }
+                                : line
+                        )
+                    );
+                    setIsDrawLine(false);
+                } else if (clickedPointIndex !== -1) {
+                    setSelectedPoint(clickedPointIndex);
+                    setSelectedLine(lines.length);
+                    setLines([
+                        ...lines,
+                        { points: [clickedPointIndex, { x, y }] },
+                    ]);
+                    setIsDrawLine(true);
+                }
             }
         } else if (event.button === 1) {
             // 中键逻辑
@@ -193,6 +229,19 @@ const Right = () => {
         } else if (mouseDown === 1) {
             // 中键逻辑
             offsetDraw(event);
+        }
+        if (isDrawLine) {
+            const { x, y } = getMousePosition(event);
+            setLines(
+                lines.map((line, idx) =>
+                    idx === selectedLine
+                        ? {
+                              ...line,
+                              points: [line.points[0], { x: x, y: y }],
+                          }
+                        : line
+                )
+            );
         }
     };
 
