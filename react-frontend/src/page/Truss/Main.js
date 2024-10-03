@@ -26,10 +26,10 @@ const TrussMain = () => {
         <Routes>
             <Route path="/" element={<Truss />} />
             <Route path="draw" element={
-                <div className="only"><Draw/></div>
+                <div className="only"><Draw /></div>
             } />
             <Route path="show" element={
-                <div className="only"><Show/></div>
+                <div className="only"><Show /></div>
             } />
         </Routes>
     );

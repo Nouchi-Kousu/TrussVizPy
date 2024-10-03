@@ -78,8 +78,10 @@ class Visualization_Data(TypedDict):
 def point_init(x: float, y: float, Constraint_Type: Literal[0, 1, 2] = 0, theta: float = 0):
     return Point(x=x, y=y, Constraint_Type=Constraint_Type, theta=theta)
 
+
 def line_init(points: Tuple[int, int], E: float, A: float, rho: float = 0):
     return Line_input(points=points, E=E, A=A, rho=rho)
+
 
 def load_init(point: int, Fx: float, Fy: float):
     return Load(point=point, Fx=Fx, Fy=Fy)

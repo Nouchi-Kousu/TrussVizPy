@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import {penTypeContext} from './context'
+import { penTypeContext } from './context'
 
 const Left = () => {
     const button = [
