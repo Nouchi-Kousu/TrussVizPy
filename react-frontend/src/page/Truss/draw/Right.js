@@ -3,22 +3,28 @@ import Head from "./Head";
 import { selectedPointContext, pointContext, penTypeContext } from "./context";
 
 const Right = () => {
-    const [penType] = useContext(penTypeContext);
+    const [penType] = useContext(penTypeContext); // 画笔类型
     const canvasRef = useRef(null); // 储存画布的引用
-    const [selectedPoint, setSelectedPoint] = useState(-1); // 存储选中的结点
+    const [selectedPoint, setSelectedPoint] = useState(-1); // 选中的结点编号
     const [points, setPoints] = useState([]); // 存储结点列表
     const [absoluteMousePosition, setAbsoluteMousePosition] = useState({
         x: 0,
         y: 0,
     }); // 鼠标位置
-    const [isDragging, setIsDragging] = useState(false);
     const [zoomScale, setZoomScale] = useState(10);
     const [offset, setOffset] = useState({ x: 50, y: 50 }); // 原点平移量
-    const [mouseDown, setMouseDown] = useState(-1);
-    const [isCtrlPressed, setIsCtrlPressed] = useState(false);
-    const [isAltPressed, setAltPressed] = useState(false);
-    const [isShiftPressed, setIsShiftPressed] = useState(false);
-
+    const [mouseDown, setMouseDown] = useState(-1); // 鼠标摁下
+    const [isCtrlPressed, setIsCtrlPressed] = useState(false); // 是否按下ctrl键
+    const [isAltPressed, setAltPressed] = useState(false); // 是否按下alt键
+    const [isShiftPressed, setIsShiftPressed] = useState(false); // 是否按下shift键
+    const [isSpacePressed, setIsSpacePressed] = useState(false); // 是否按下空格键
+    const [delPoint, setDelPoint] = useState(-1); // 删除结点编号
+    const [lineMakings, setLineMakings] = useState([]); // 储存材料
+    const [lineMakingsIdx, setLineMakingIdx] = useState(-1);
+    const [lines, setLines] = useState([]); // 储存杆件
+    const [selectedLine, setSelectedLine] = useState(-1); // 选中的杆件编号
+    
+    // 更改canvas大小
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -27,6 +33,7 @@ const Right = () => {
         }
     };
 
+    // 挂载大小改变
     useEffect(() => {
         resizeCanvas();
         window.addEventListener("resize", resizeCanvas);
@@ -35,7 +42,37 @@ const Right = () => {
         };
     }, []);
 
-    // 动态应用坐标变换
+    // 获取鼠标在坐标系中的位置（像素位置）
+    const getMousePosition = (event) => {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left - offset.x,
+            y: canvas.height - (event.clientY - rect.top) - offset.y,
+        };
+    };
+
+    // 获取鼠标相对左下角的像素坐标
+    const getAbsoluteMousePosition = (event) => {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: canvas.height - (event.clientY - rect.top),
+        };
+    };
+
+    const getSelectedPoint = (event) => {
+        const { x, y } = getMousePosition(event);
+        const clickedPointIndex = points.findIndex(
+            (circle) =>
+                Math.hypot(circle.x * zoomScale - x, circle.y * zoomScale - y) <
+                10
+        );
+        return clickedPointIndex;
+    };
+
+    // canvas元素绘制
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
@@ -45,12 +82,7 @@ const Right = () => {
         context.translate(offset.x, canvas.height - offset.y); // 平移原点
         context.scale(1, -1); // 翻转 y 轴
 
-        context.clearRect(
-            -canvas.width,
-            -canvas.height,
-            canvas.width * 2,
-            canvas.height * 2
-        ); // 清空整个画布
+        context.clearRect(-offset.x, -offset.y, canvas.width, canvas.height); // 清空整个画布
         context.beginPath();
         context.moveTo(0, 0);
         context.lineTo(60, 0); // x 轴
@@ -72,35 +104,42 @@ const Right = () => {
             context.fillStyle = idx === selectedPoint ? "red" : "blue";
             context.fill();
         });
-    }, [points, selectedPoint, offset, zoomScale]);
 
-    const getMousePosition = (event) => {
-        const canvas = canvasRef.current;
-        const rect = canvas.getBoundingClientRect();
-        return {
-            x: event.clientX - rect.left - offset.x,
-            y: canvas.height - (event.clientY - rect.top) - offset.y,
-        };
-    };
+        lines.forEach((line, idx) => {
+            context.beginPath();
+            const start = line.points[0];
+            const end = line.points[1];
+            context.moveTo(points[start].x * zoomScale, points[start].y * zoomScale);
+            // TODO 线绘制
+            context.strokeStyle = idx === selectedLine ? "red" : "black";
+            context.lineWidth = 2;
+            context.stroke();
+            context.closePath();
+        });
+    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine]);
 
-    const getAbsoluteMousePosition = (event) => {
-        const canvas = canvasRef.current;
-        const rect = canvas.getBoundingClientRect();
-        return {
-            x: event.clientX - rect.left,
-            y: canvas.height - (event.clientY - rect.top),
-        };
-    };
+    // 删除点
+    useEffect(() => {
+        if (delPoint !== -1) {
+            setPoints(points.filter((_, idx) => idx !== delPoint));
+            setDelPoint(-1);
+            setSelectedPoint(-1);
+        }
+    }, [delPoint]);
 
+    // 鼠标摁下
     const handleMouseDown = (event) => {
         event.preventDefault();
         if (event.button === 0) {
+            // 左键逻辑
             setMouseDown(0);
-            if (penType === "point") {
+            console.log(isSpacePressed);
+            if (isSpacePressed || penType === "grab") {
+                const { x, y } = getAbsoluteMousePosition(event);
+                setAbsoluteMousePosition({ x, y });
+            } else if (penType === "point") {
                 const { x, y } = getMousePosition(event);
-                const clickedPointIndex = points.findIndex(
-                    (circle) => Math.hypot(circle.x - x, circle.y - y) < 10
-                );
+                const clickedPointIndex = getSelectedPoint(event);
                 setSelectedPoint(clickedPointIndex);
                 if (clickedPointIndex === -1) {
                     setSelectedPoint(points.length);
@@ -109,21 +148,39 @@ const Right = () => {
                         { x: x / zoomScale, y: y / zoomScale },
                     ]);
                 }
-            }
-            if (penType === "grab") {
-                const { x, y } = getAbsoluteMousePosition(event);
-                setAbsoluteMousePosition({ x, y });
+            } else if (penType === "delete") {
+                // 删除逻辑
+                const clickedPointIndex = getSelectedPoint(event);
+                setDelPoint(clickedPointIndex);
+            } else if (penType === "line") {
+                // 画线逻辑
+                const clickedPointIndex = getSelectedPoint(event);
             }
         } else if (event.button === 1) {
+            // 中键逻辑
             const { x, y } = getAbsoluteMousePosition(event);
             setAbsoluteMousePosition({ x, y });
-            setMouseDown(2);
+            setMouseDown(1);
         }
     };
 
+    // 移动坐标系
+    const offsetDraw = (event) => {
+        const { x, y } = getAbsoluteMousePosition(event);
+        setOffset({
+            x: offset.x + x - absoluteMousePosition.x,
+            y: offset.y + y - absoluteMousePosition.y,
+        });
+        setAbsoluteMousePosition({ x, y });
+    };
+
+    // 鼠标移动
     const handleMouseMove = (event) => {
         if (mouseDown === 0) {
-            if (penType === "point") {
+            // 左键逻辑
+            if (penType === "grab" || isSpacePressed) {
+                offsetDraw(event);
+            } else if (penType === "point") {
                 const { x, y } = getMousePosition(event);
                 setPoints(
                     points.map((point, idx) =>
@@ -133,28 +190,18 @@ const Right = () => {
                     )
                 );
             }
-            if (penType === "grab") {
-                const { x, y } = getAbsoluteMousePosition(event);
-                setOffset({
-                    x: offset.x + x - absoluteMousePosition.x,
-                    y: offset.y + y - absoluteMousePosition.y,
-                });
-                setAbsoluteMousePosition({ x, y });
-            }
-        } else if (mouseDown === 2) {
-            const { x, y } = getAbsoluteMousePosition(event);
-            setOffset({
-                x: offset.x + x - absoluteMousePosition.x,
-                y: offset.y + y - absoluteMousePosition.y,
-            });
-            setAbsoluteMousePosition({ x, y });
+        } else if (mouseDown === 1) {
+            // 中键逻辑
+            offsetDraw(event);
         }
     };
 
+    // 鼠标抬起
     const handleMouseUp = () => {
         setMouseDown(-1);
     };
 
+    // 滚轮逻辑
     useEffect(() => {
         const canvas = canvasRef.current;
 
@@ -196,6 +243,7 @@ const Right = () => {
         };
     }, [isCtrlPressed, isAltPressed, zoomScale, offset]);
 
+    // 键盘事件
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Control") {
@@ -204,6 +252,8 @@ const Right = () => {
                 setAltPressed(true);
             } else if (event.key === "Shift") {
                 setIsShiftPressed(true);
+            } else if (event.key === " ") {
+                setIsSpacePressed(true);
             }
         };
 
@@ -214,6 +264,8 @@ const Right = () => {
                 setAltPressed(false);
             } else if (event.key === "Shift") {
                 setIsShiftPressed(false);
+            } else if (event.key === " ") {
+                setIsSpacePressed(false);
             }
         };
 
@@ -232,6 +284,7 @@ const Right = () => {
         <div className="right">
             <Head
                 selectedPointSet={[selectedPoint, setSelectedPoint]}
+                delPointSet={[delPoint, setDelPoint]}
                 pointsSet={[points, setPoints]}
                 canvasRef={canvasRef}
             />

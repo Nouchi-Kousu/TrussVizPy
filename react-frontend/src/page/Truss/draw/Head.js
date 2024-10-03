@@ -1,13 +1,33 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { penTypeContext, selectedPointContext } from "./context";
 
-const Head = ({ selectedPointSet, pointsSet, canvasRef }) => {
+const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
     const [penType] = useContext(penTypeContext);
     const [selectedPoint] = selectedPointSet;
-    const [points] = pointsSet;
+    const [points, setPoints] = pointsSet;
+    const [, setDelPoint] = delPointSet;
     const canvas = canvasRef.current;
-    // let canvasWidth = canvas.width;
-    // const canvasHeight = canvas.height;
+    const [xValue, setXValue] = useState(0);
+    const [yValue, setYValue] = useState(0);
+
+    useEffect(() => {
+        if (selectedPoint !== -1) {
+            const point = points[selectedPoint];
+            setXValue(point.x);
+            setYValue(point.y);
+        }
+    }, [selectedPoint, points]);
+
+    const handleInputChange = (e, setter, index) => {
+        const value = e.target.value;
+        setter(value);
+        if (selectedPoint !== -1) {
+            const newPoints = [...points];
+            newPoints[selectedPoint][index] = Number(value);
+            setPoints(newPoints);
+        }
+    };
+
     let headTable = <></>;
     if (penType === "choose") {
         if (selectedPoint) {
@@ -18,13 +38,27 @@ const Head = ({ selectedPointSet, pointsSet, canvasRef }) => {
     } else if (penType === "delete") {
         // 不做任何操作
     } else if (penType === "point") {
-        console.log(selectedPoint);
         if (selectedPoint !== -1) {
-            const point = points[selectedPoint];
             headTable = (
-                <>
-                    {point.x},{point.y}
-                </>
+                <div className="point">
+                    <input
+                        type="number"
+                        value={xValue}
+                        onChange={(e) => handleInputChange(e, setXValue, "x")}
+                    />
+                    <input
+                        type="number"
+                        value={yValue}
+                        onChange={(e) => handleInputChange(e, setYValue, "y")}
+                    />
+                    <button
+                        onClick={() => {
+                            setDelPoint(selectedPoint);
+                        }}
+                    >
+                        删除
+                    </button>
+                </div>
             );
         }
     } else if (penType === "line") {
