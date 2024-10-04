@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { penTypeContext, selectedPointContext } from "./context";
+import { penTypeContext, makingsContext } from "./context";
 
 const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
     const [penType] = useContext(penTypeContext);
     const [selectedPoint] = selectedPointSet;
     const [points, setPoints] = pointsSet;
     const [, setDelPoint] = delPointSet;
-    const canvas = canvasRef.current;
     const [xValue, setXValue] = useState(0);
     const [yValue, setYValue] = useState(0);
+    const [, setMakingsSetting] = useContext(makingsContext);
 
     useEffect(() => {
         if (selectedPoint !== -1) {
@@ -73,7 +73,7 @@ const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
 
     return (
         <div className="head">
-            <li className={penType}></li>
+            {penType === "line" ? <li className={penType} onClick={() => setMakingsSetting(true)}></li> : <li className={penType}></li>}
             {headTable}
         </div>
     );

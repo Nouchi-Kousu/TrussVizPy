@@ -13,6 +13,7 @@ const Left = () => {
         "load",
     ];
     const [, setPenType] = useContext(penTypeContext)
+
     const buttons = button.map((item, idx) => (
         <li className={item} key={item} onClick={() => setPenType(item)}>
             {item}

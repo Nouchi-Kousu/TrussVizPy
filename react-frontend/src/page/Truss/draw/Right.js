@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Head from "./Head";
-import { selectedPointContext, pointContext, penTypeContext } from "./context";
+import { penTypeContext } from "./context";
 
 const Right = () => {
     const [penType] = useContext(penTypeContext); // 画笔类型
@@ -114,7 +114,6 @@ const Right = () => {
                 points[start].x * zoomScale,
                 points[start].y * zoomScale
             );
-            // TODO 线绘制
             if (typeof end === "number") {
                 context.lineTo(
                     points[end].x * zoomScale,
