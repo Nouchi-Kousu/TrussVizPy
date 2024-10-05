@@ -19,8 +19,7 @@ const Right = () => {
     const [isShiftPressed, setIsShiftPressed] = useState(false); // 是否按下shift键
     const [isSpacePressed, setIsSpacePressed] = useState(false); // 是否按下空格键
     const [delPoint, setDelPoint] = useState(-1); // 删除结点编号
-    const [lineMakings, setLineMakings] = useState([]); // 储存材料
-    const [lineMakingsIdx, setLineMakingIdx] = useState(-1);
+
     const [lines, setLines] = useState([]); // 储存杆件
     const [selectedLine, setSelectedLine] = useState(-1); // 选中的杆件编号
     const [isDrawLine, setIsDrawLine] = useState(false);
