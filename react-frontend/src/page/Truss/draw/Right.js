@@ -24,7 +24,7 @@ const Right = () => {
     const [lines, setLines] = useContext(linesContext);
     const [lineMakingsIdx, setLineMakingsIdx] = useContext(lineMakingsIdxContext);
     const [lineMakings, setLineMakings] = useContext(lineMakingsContext)
-    
+
     // 更改canvas大小
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
@@ -85,6 +85,8 @@ const Right = () => {
 
         context.clearRect(-offset.x, -offset.y, canvas.width, canvas.height); // 清空整个画布
         context.beginPath();
+        context.strokeStyle = '#000000';
+        context.lineWidth = 2;
         context.moveTo(0, 0);
         context.lineTo(60, 0); // x 轴
         context.moveTo(0, 0);
@@ -107,6 +109,12 @@ const Right = () => {
         });
 
         lines.forEach((line, idx) => {
+            if (idx === selectedLine) {
+                context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                context.shadowBlur = 10;
+                context.shadowOffsetX = 5;
+                context.shadowOffsetY = 5;
+            }
             context.beginPath();
             const start = line.points[0];
             const end = line.points[1];
@@ -122,10 +130,14 @@ const Right = () => {
             } else {
                 context.lineTo(end.x, end.y);
             }
-            context.strokeStyle = idx === selectedLine ? "red" : lineMakings[lineMakingsIdx].color;
-            context.lineWidth = 2;
+            context.strokeStyle = lineMakings[line.makingsIdx].color;
+            context.lineWidth = idx === selectedLine ? 6 : 2;
             context.stroke();
             context.closePath();
+            context.shadowColor = 'transparent'; // 关闭阴影
+            context.shadowBlur = 0;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
         });
     }, [points, selectedPoint, offset, zoomScale, lines, selectedLine]);
 
@@ -155,6 +167,7 @@ const Right = () => {
 
     // 鼠标摁下
     const handleMouseDown = (event) => {
+        console.log(lines)
         event.preventDefault();
         if (event.button === 0) {
             // 左键逻辑

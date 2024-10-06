@@ -80,14 +80,17 @@ const Head = ({
             );
         }
     } else if (penType === "line") {
-        const makingIdx = selectedLine === -1 ? lineMakingsIdx : selectedLine;
+        const makingIdx = selectedLine === -1 ? lineMakingsIdx : lines[selectedLine].makingsIdx;
         headTable = (
             <div className="line">
                 材料名：
                 <select
                     onChange={(e) => {
                         setLineMakingsIdx(e.target.value);
-                        setLines(lines.map((line, idx)=> idx === selectedLine ? {...line, makingIdx: e.target.value} : line))
+                        setLines([...lines.map((line, idx) => {
+                            return idx === selectedLine ? { ...line, makingsIdx: e.target.value } : line
+                        })])
+                        console.log(lines)
                     }}
                 >
                     {lineMakings.map((making, index) => (

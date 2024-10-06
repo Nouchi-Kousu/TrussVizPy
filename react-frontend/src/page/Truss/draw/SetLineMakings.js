@@ -6,7 +6,7 @@ const SetLineMakings = () => {
     const [, setMakingsSetting] = useContext(makingsContext);
     const [lineMakings, setLineMakings] = useContext(lineMakingsContext);
     const [lineMakingsIdx, setLineMakingsIdx] = useContext(lineMakingsIdxContext);
-    
+
     const closeModal = () => {
         setMakingsSetting(false);
     };

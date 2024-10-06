@@ -8,13 +8,13 @@ const Draw = () => {
     const [penType, setPenType] = useState("choose");
     const [makingsSeting, setMakingsSetting] = useState(false);
     const [lineMakings, setLineMakings] = useState([{ name: 'Normal', E: 4.8e6, A: 1, rho: 0, color: '#66ccff' }]); // 储存材料
-    const [lineMakingsIdx, setLineMakingIdx] = useState(0);
+    const [lineMakingsIdx, setLineMakingsIdx] = useState(0);
     const [lines, setLines] = useState([]); // 储存杆件
 
     return (
         <div className="draw">
             <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
-            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingIdx]}>
+            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingsIdx]}>
             <linesContext.Provider value={[lines, setLines]}>
             <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
             <penTypeContext.Provider value={[penType, setPenType]}>
