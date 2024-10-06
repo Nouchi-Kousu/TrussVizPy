@@ -9,3 +9,7 @@ export const pointContext = createContext(null)
 export const makingsContext = createContext(null)
 
 export const linesContext = createContext(null)
+
+export const lineMakingsIdxContext = createContext(null)
+
+export const lineMakingsContext = createContext(null)

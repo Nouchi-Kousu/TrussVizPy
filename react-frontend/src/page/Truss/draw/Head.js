@@ -1,7 +1,19 @@
 import { useContext, useEffect, useState } from "react";
-import { penTypeContext, makingsContext } from "./context";
+import {
+    penTypeContext,
+    makingsContext,
+    lineMakingsIdxContext,
+    lineMakingsContext,
+} from "./context";
 
-const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
+const Head = ({
+    selectedPointSet,
+    delPointSet,
+    pointsSet,
+    canvasRef,
+    selectedLineSet,
+    linesSet
+}) => {
     const [penType] = useContext(penTypeContext);
     const [selectedPoint] = selectedPointSet;
     const [points, setPoints] = pointsSet;
@@ -9,6 +21,12 @@ const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
     const [xValue, setXValue] = useState(0);
     const [yValue, setYValue] = useState(0);
     const [, setMakingsSetting] = useContext(makingsContext);
+    const [lineMakings, setLineMakings] = useContext(lineMakingsContext);
+    const [lineMakingsIdx, setLineMakingsIdx] = useContext(
+        lineMakingsIdxContext
+    );
+    const [selectedLine, setSelectedLine] = selectedLineSet;
+    const [lines, setLines] = linesSet;
 
     useEffect(() => {
         if (selectedPoint !== -1) {
@@ -62,7 +80,40 @@ const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
             );
         }
     } else if (penType === "line") {
-        // 不做任何操作
+        const makingIdx = selectedLine === -1 ? lineMakingsIdx : selectedLine;
+        headTable = (
+            <div className="line">
+                材料名：
+                <select
+                    onChange={(e) => {
+                        setLineMakingsIdx(e.target.value);
+                        setLines(lines.map((line, idx)=> idx === selectedLine ? {...line, makingIdx: e.target.value} : line))
+                    }}
+                >
+                    {lineMakings.map((making, index) => (
+                        <option
+                            key={index}
+                            value={index}
+                            selected={index === makingIdx}
+                        >
+                            {making.name}
+                        </option>
+                    ))}
+                </select>
+                &nbsp; E：
+                <span className="list">{lineMakings[makingIdx].E}</span>&nbsp;
+                A：<span className="list">{lineMakings[makingIdx].A}</span>
+                &nbsp; ρ：
+                <span className="list">{lineMakings[makingIdx].rho}</span>
+                &nbsp;&nbsp;
+                <input
+                    type="color"
+                    className="color"
+                    disabled
+                    value={lineMakings[makingIdx].color}
+                ></input>
+            </div>
+        );
     } else if (penType === "constraint2") {
         // 不做任何操作
     } else if (penType === "constraint1") {
@@ -73,7 +124,14 @@ const Head = ({ selectedPointSet, delPointSet, pointsSet, canvasRef }) => {
 
     return (
         <div className="head">
-            {penType === "line" ? <li className={penType} onClick={() => setMakingsSetting(true)}></li> : <li className={penType}></li>}
+            {penType === "line" ? (
+                <li
+                    className={penType}
+                    onClick={() => setMakingsSetting(true)}
+                ></li>
+            ) : (
+                <li className={penType}></li>
+            )}
             {headTable}
         </div>
     );

@@ -1,7 +1,7 @@
 import Right from "./Right";
 import Left from "./Left";
 import SetLineMakings from "./SetLineMakings";
-import { penTypeContext, makingsContext, linesContext } from './context'
+import { penTypeContext, makingsContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from './context'
 import { useState } from "react";
 
 const Draw = () => {
@@ -13,15 +13,19 @@ const Draw = () => {
 
     return (
         <div className="draw">
+            <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
+            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingIdx]}>
             <linesContext.Provider value={[lines, setLines]}>
             <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
             <penTypeContext.Provider value={[penType, setPenType]}>
                 <Left />
-                <Right lineMakingsSet={[lineMakings, setLineMakings]} lineMakingsIdxSet={[lineMakingsIdx, setLineMakingIdx]} />
-                    {makingsSeting && <SetLineMakings lineMkingsSet={[lineMakings, setLineMakings]} />}
+                <Right />
+                {makingsSeting && <SetLineMakings />}
             </penTypeContext.Provider>
             </makingsContext.Provider>
             </linesContext.Provider>
+            </lineMakingsIdxContext.Provider>
+            </lineMakingsContext.Provider>
         </div>
     );
 };

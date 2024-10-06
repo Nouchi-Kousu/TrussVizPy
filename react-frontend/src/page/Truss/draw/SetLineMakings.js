@@ -1,11 +1,12 @@
 import { useContext, useState } from "react";
-import { makingsContext, linesContext } from "./context";
+import { makingsContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from "./context";
 
-const SetLineMakings = ({ lineMkingsSet, lineMkingsIdxSet }) => {
-    const [, setMakingsSetting] = useContext(makingsContext);
-    const [lineMakings, setLineMakings] = lineMkingsSet;
+const SetLineMakings = () => {
     const [lines, setLines] = useContext(linesContext);
-
+    const [, setMakingsSetting] = useContext(makingsContext);
+    const [lineMakings, setLineMakings] = useContext(lineMakingsContext);
+    const [lineMakingsIdx, setLineMakingsIdx] = useContext(lineMakingsIdxContext);
+    
     const closeModal = () => {
         setMakingsSetting(false);
     };
@@ -22,6 +23,7 @@ const SetLineMakings = ({ lineMkingsSet, lineMkingsIdxSet }) => {
                 ρ：<span className="list">{item.rho}</span>&nbsp;&nbsp;
                 <input type="color" className="color" disabled value={item.color}></input>&nbsp;&nbsp;
                 {item.name !== 'Normal' && <span className="button" onClick={() => {
+                    if (lineMakingsIdx === idx) setLineMakingsIdx(0)
                     setLineMakings(lineMakings.filter(it => it.name !== item.name))
                     setLines(lines.map(line => {
                         if (line.makings === idx) {

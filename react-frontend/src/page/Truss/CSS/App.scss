@@ -34,7 +34,7 @@ body {
 .draw {
     height: 100%;
     width: 100%;
-    background-color: aqua;
+    background-color: rgb(247, 247, 247);
     display: flex;
     box-sizing: border-box;
 
@@ -65,6 +65,21 @@ body {
             height: 40px;
             // background-color: rgb(255, 255, 255);
             margin-left: 10px;
+        }
+        .line {
+            input:not(.color) {
+                width: 80px;
+                height: 15px;
+            }
+            .color {
+                width: 40px;
+                height: 20px;
+            }
+            .list {
+                display: inline-block;
+                width: 80px;
+                padding: 4px;
+            }
         }
     }
 

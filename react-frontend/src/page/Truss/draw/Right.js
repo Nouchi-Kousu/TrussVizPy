@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Head from "./Head";
-import { penTypeContext, linesContext } from "./context";
+import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from "./context";
 
 const Right = () => {
     const [penType] = useContext(penTypeContext); // 画笔类型
@@ -22,7 +22,9 @@ const Right = () => {
     const [selectedLine, setSelectedLine] = useState(-1); // 选中的杆件编号
     const [isDrawLine, setIsDrawLine] = useState(false);
     const [lines, setLines] = useContext(linesContext);
-
+    const [lineMakingsIdx, setLineMakingsIdx] = useContext(lineMakingsIdxContext);
+    const [lineMakings, setLineMakings] = useContext(lineMakingsContext)
+    
     // 更改canvas大小
     const resizeCanvas = () => {
         const canvas = canvasRef.current;
@@ -120,7 +122,7 @@ const Right = () => {
             } else {
                 context.lineTo(end.x, end.y);
             }
-            context.strokeStyle = idx === selectedLine ? "red" : "black";
+            context.strokeStyle = idx === selectedLine ? "red" : lineMakings[lineMakingsIdx].color;
             context.lineWidth = 2;
             context.stroke();
             context.closePath();
@@ -207,7 +209,7 @@ const Right = () => {
                     setSelectedLine(lines.length);
                     setLines([
                         ...lines,
-                        { points: [clickedPointIndex, { x, y }] },
+                        { points: [clickedPointIndex, { x, y }], makingsIdx: lineMakingsIdx },
                     ]);
                     setIsDrawLine(true);
                 }
@@ -356,6 +358,8 @@ const Right = () => {
                 delPointSet={[delPoint, setDelPoint]}
                 pointsSet={[points, setPoints]}
                 canvasRef={canvasRef}
+                selectedLineSet={[selectedLine, setSelectedLine]}
+                linesSet={[lines, setLines]}
             />
             <canvas
                 ref={canvasRef}
