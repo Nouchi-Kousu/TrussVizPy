@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import Head from "./Head";
-import { penTypeContext } from "./context";
+import { penTypeContext, linesContext } from "./context";
 
 const Right = () => {
     const [penType] = useContext(penTypeContext); // 画笔类型
@@ -19,10 +19,9 @@ const Right = () => {
     const [isShiftPressed, setIsShiftPressed] = useState(false); // 是否按下shift键
     const [isSpacePressed, setIsSpacePressed] = useState(false); // 是否按下空格键
     const [delPoint, setDelPoint] = useState(-1); // 删除结点编号
-
-    const [lines, setLines] = useState([]); // 储存杆件
     const [selectedLine, setSelectedLine] = useState(-1); // 选中的杆件编号
     const [isDrawLine, setIsDrawLine] = useState(false);
+    const [lines, setLines] = useContext(linesContext);
 
     // 更改canvas大小
     const resizeCanvas = () => {

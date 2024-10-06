@@ -1,27 +1,37 @@
 import { useContext, useState } from "react";
-import { makingsContext } from "./context";
+import { makingsContext, linesContext } from "./context";
 
 const SetLineMakings = ({ lineMkingsSet, lineMkingsIdxSet }) => {
     const [, setMakingsSetting] = useContext(makingsContext);
     const [lineMakings, setLineMakings] = lineMkingsSet;
+    const [lines, setLines] = useContext(linesContext);
 
     const closeModal = () => {
         setMakingsSetting(false);
     };
-    const [newMakings, setNewMakings] = useState({name: ""})
+    const [newMakings, setNewMakings] = useState({ name: "" })
     const addMakings = (e, type) => {
         setNewMakings(prev => ({ ...prev, [type]: e.target.value }))
     }
-    const markingsList = lineMakings.map((item) => {
+    const markingsList = lineMakings.map((item, idx) => {
         return (
             <div key={item.name}>
                 材料名：<span className="list">{item.name}</span>&nbsp;
                 E：<span className="list">{item.E}</span>&nbsp;
                 A：<span className="list">{item.A}</span>&nbsp;
-                ρ：<span className="list">{item.rho}</span>&nbsp;&nbsp;&nbsp;
-                <span className="button" onClick={() => {
-                    setLineMakings([...lineMakings.filter(it => it.name !== item.name)])
-                }}>删除</span>
+                ρ：<span className="list">{item.rho}</span>&nbsp;&nbsp;
+                <input type="color" className="color" disabled value={item.color}></input>&nbsp;&nbsp;
+                {item.name !== 'Normal' && <span className="button" onClick={() => {
+                    setLineMakings(lineMakings.filter(it => it.name !== item.name))
+                    setLines(lines.map(line => {
+                        if (line.makings === idx) {
+                            line.makings = 0
+                        } else if (line.makings > idx) {
+                            line.makings -= 1
+                        }
+                        return line
+                    }))
+                }}>删除</span>}
             </div>
         )
     })
@@ -33,10 +43,15 @@ const SetLineMakings = ({ lineMkingsSet, lineMkingsIdxSet }) => {
                     材料名：<input type="text" placeholder="name" onChange={(e) => addMakings(e, 'name')} />&nbsp;
                     E：<input type="number" placeholder="modulus" onChange={(e) => addMakings(e, 'E')} />&nbsp;
                     A：<input type="number" placeholder="area" onChange={(e) => addMakings(e, 'A')} />&nbsp;
-                    ρ：<input type="number" placeholder="densities" onChange={(e) => addMakings(e, 'rho')} />&nbsp;&nbsp;&nbsp;
+                    ρ：<input type="number" placeholder="densities" onChange={(e) => addMakings(e, 'rho')} />&nbsp;&nbsp;
+                    <input type="color" className="color" onChange={(e) => addMakings(e, 'color')}></input>&nbsp;&nbsp;
                     <span className="button" onClick={() => {
                         if (newMakings.name === '') return
-                        setLineMakings([...lineMakings.filter(item => item.name !== newMakings.name), newMakings])
+                        if (lineMakings.some(item => item.name === newMakings.name)) {
+                            setLineMakings(lineMakings.map(item => item.name !== newMakings.name ? item : newMakings))
+                        } else {
+                            setLineMakings([...lineMakings, newMakings])
+                        }
                     }}>添加</span>
                 </div>
                 <div className="divlist">{markingsList}</div>
