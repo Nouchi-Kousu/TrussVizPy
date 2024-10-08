@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
 import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from "./context"
+import { drawDataContext } from "../context"
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
@@ -21,11 +22,23 @@ const Right = () => {
     const [delPoint, setDelPoint] = useState(-1) // 删除结点编号
     const [selectedLine, setSelectedLine] = useState(-1) // 选中的杆件编号
     const [isDrawLine, setIsDrawLine] = useState(false)
-    const [loads, setLoads] = useState([])
-    const [selectedLoad, setSelectedLoad] = useState(-1)
+    const [isDrawLoad, setIsDrawLoad] = useState(false)
     const [lines, setLines] = useContext(linesContext)
     const [lineMakingsIdx,] = useContext(lineMakingsIdxContext)
     const [lineMakings,] = useContext(lineMakingsContext)
+    const [loads, setLoads] = useState([])
+    const [selectedLoad, setSelectedLoad] = useState(-1)
+    const [, setDrawData] = useContext(drawDataContext)
+
+    useEffect(() => {
+        if (loads.length === 0) {
+            setDrawData({
+                isLoad: false,
+                lines: lines,
+                points: points,
+            })
+        }
+    }, [lines, points])
 
 
     // 更改canvas大小
@@ -90,6 +103,45 @@ const Right = () => {
         return clickedLineIndex
     }
 
+    const getSelectedLoad = (event) => {
+        const { x, y } = getMousePosition(event)
+        const clickedLoadIndex = loads.findIndex((load) => {
+            const [startx, starty] = [points[load.point].x, points[load.point].y]
+            const [endx, endy] = [load.Fx + startx, load.Fy + starty]
+            const l1 = Math.hypot(startx * zoomScale - x, starty * zoomScale - y)
+            const l2 = Math.hypot(endx * zoomScale - x, endy * zoomScale - y)
+            const L = Math.hypot(startx * zoomScale - endx * zoomScale, starty * zoomScale - endy * zoomScale)
+            return l1 + l2 <= L + 1
+        })
+        return clickedLoadIndex
+    }
+
+    const drawArrow = (ctx, fromX, fromY, toX, toY, arrowWidth = 10, color = 'black') => {
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+
+        const angle = Math.atan2(toY - fromY, toX - fromX);
+
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+
+        const headLength = arrowWidth;
+        const arrowX1 = toX - headLength * Math.cos(angle - Math.PI / 6);
+        const arrowY1 = toY - headLength * Math.sin(angle - Math.PI / 6);
+        const arrowX2 = toX - headLength * Math.cos(angle + Math.PI / 6);
+        const arrowY2 = toY - headLength * Math.sin(angle + Math.PI / 6);
+
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(arrowX1, arrowY1);
+        ctx.lineTo(arrowX2, arrowY2);
+        ctx.closePath();
+        ctx.fill();
+    }
+
     // canvas元素绘制
     useEffect(() => {
         const canvas = canvasRef.current
@@ -109,6 +161,24 @@ const Right = () => {
         context.moveTo(0, 0)
         context.lineTo(0, 60) // y 轴
         context.stroke()
+
+        loads.forEach((load, idx) => {
+            if (idx === selectedLoad) {
+                context.shadowColor = 'rgba(0, 0, 0, 0.5)'
+                context.shadowBlur = 10
+                context.shadowOffsetX = 5
+                context.shadowOffsetY = 5
+            }
+            const startx = points[load.point].x * zoomScale
+            const starty = points[load.point].y * zoomScale
+            const endx = load.Fx * zoomScale + startx
+            const endy = load.Fy * zoomScale + starty
+            drawArrow(context, startx, starty, endx, endy)
+            context.shadowColor = 'transparent' // 关闭阴影
+            context.shadowBlur = 0
+            context.shadowOffsetX = 0
+            context.shadowOffsetY = 0
+        })
 
         lines.forEach((line, idx) => {
             if (idx === selectedLine) {
@@ -193,7 +263,7 @@ const Right = () => {
                 context.closePath()
             }
         })
-    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine])
+    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad])
 
     // 删除点
     useEffect(() => {
@@ -311,6 +381,21 @@ const Right = () => {
                         )
                     )
                 }
+            } else if (penType === "load") {
+                const clickedLoadIndex = getSelectedLoad(event)
+                const clickedPointIndex = getSelectedPoint(event)
+                if (clickedPointIndex !== -1 && !isDrawLoad) {
+                    setSelectedPoint(clickedPointIndex)
+                    setSelectedLoad(loads.length)
+                    setIsDrawLoad(true)
+                    setLoads(
+                        [...loads, { point: clickedPointIndex, Fx: 0, Fy: 0 }]
+                    )
+                } else if (isDrawLoad) {
+                    setIsDrawLoad(false)
+                } else if (clickedLoadIndex !== -1) {
+                    setSelectedLoad(clickedLoadIndex)
+                }
             }
         } else if (event.button === 1) {
             // 中键逻辑
@@ -360,6 +445,19 @@ const Right = () => {
                             points: [line.points[0], { x: x, y: y }],
                         }
                         : line
+                )
+            )
+        } else if (isDrawLoad) {
+            const { x, y } = getMousePosition(event)
+            setLoads(
+                loads.map((load, idx) =>
+                    idx === selectedLoad
+                        ? {
+                            ...load,
+                            Fx: x / zoomScale - points[load.point].x,
+                            Fy: y / zoomScale - points[load.point].y
+                        }
+                        : load
                 )
             )
         }
@@ -460,6 +558,8 @@ const Right = () => {
                 linesSet={[lines, setLines]}
                 zoomScaleSet={[zoomScale, setZoomScale]}
                 offsetSet={[offset, setOffset]}
+                loadsSet={[loads, setLoads]}
+                selectedLoadSet={[selectedLoad, setSelectedLoad]}
             />
             <canvas
                 ref={canvasRef}

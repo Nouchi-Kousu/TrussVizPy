@@ -4,6 +4,7 @@ import Show from "./show/Show"
 import Truss from "./Truss"
 import "./CSS/App.scss"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { drawDataContext } from "./context"
 
 const TrussMain = () => {
     const penTypeList = [
@@ -21,17 +22,20 @@ const TrussMain = () => {
     const [points, setPoints] = useState([])
     const [lines, setLines] = useState([])
     const [constraintNums, setConstraintNums] = useState(0)
+    const [drawData, setDrawData] = useState({})
 
     return (
-        <Routes>
-            <Route path="/" element={<Truss />} />
-            <Route path="draw" element={
-                <div className="only"><Draw /></div>
-            } />
-            <Route path="show" element={
-                <div className="only"><Show /></div>
-            } />
-        </Routes>
+        <drawDataContext.Provider value={[drawData, setDrawData]}>
+            <Routes>
+                <Route path="/" element={<Truss />} />
+                <Route path="draw" element={
+                    <div className="only"><Draw /></div>
+                } />
+                <Route path="show" element={
+                    <div className="only"><Show /></div>
+                } />
+            </Routes>
+        </drawDataContext.Provider>
     )
 }
 

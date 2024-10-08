@@ -17,11 +17,11 @@ const SetLineMakings = () => {
     const markingsList = lineMakings.map((item, idx) => {
         return (
             <div key={item.name}>
-                材料名：<span className="list">{item.name}</span>&nbsp
-                E：<span className="list">{item.E}</span>&nbsp
-                A：<span className="list">{item.A}</span>&nbsp
-                ρ：<span className="list">{item.rho}</span>&nbsp&nbsp
-                <input type="color" className="color" disabled value={item.color}></input>&nbsp&nbsp
+                材料名：<span className="list">{item.name}</span>&nbsp;
+                E：<span className="list">{item.E}</span>&nbsp;
+                A：<span className="list">{item.A}</span>&nbsp;
+                ρ：<span className="list">{item.rho}</span>&nbsp;&nbsp;
+                <input type="color" className="color" disabled value={item.color}></input>&nbsp;&nbsp;
                 {item.name !== 'Normal' && <span className="button" onClick={() => {
                     if (lineMakingsIdx === idx) setLineMakingsIdx(0)
                     setLineMakings(lineMakings.filter(it => it.name !== item.name))
@@ -42,11 +42,11 @@ const SetLineMakings = () => {
             <div className="makings" onClick={(e) => e.stopPropagation()}>
                 <h2>设置杆件材料</h2>
                 <div>
-                    材料名：<input type="text" placeholder="name" onChange={(e) => addMakings(e, 'name')} />&nbsp
-                    E：<input type="number" placeholder="modulus" onChange={(e) => addMakings(e, 'E')} />&nbsp
-                    A：<input type="number" placeholder="area" onChange={(e) => addMakings(e, 'A')} />&nbsp
-                    ρ：<input type="number" placeholder="densities" onChange={(e) => addMakings(e, 'rho')} />&nbsp&nbsp
-                    <input type="color" className="color" onChange={(e) => addMakings(e, 'color')}></input>&nbsp&nbsp
+                    材料名：<input type="text" placeholder="name" onChange={(e) => addMakings(e, 'name')} />&nbsp;
+                    E：<input type="number" placeholder="modulus" onChange={(e) => addMakings(e, 'E')} />&nbsp;
+                    A：<input type="number" placeholder="area" onChange={(e) => addMakings(e, 'A')} />&nbsp;
+                    ρ：<input type="number" placeholder="densities" onChange={(e) => addMakings(e, 'rho')} />&nbsp;&nbsp;
+                    <input type="color" className="color" onChange={(e) => addMakings(e, 'color')}></input>&nbsp;&nbsp;
                     <span className="button" onClick={() => {
                         if (newMakings.name === '') return
                         if (lineMakings.some(item => item.name === newMakings.name)) {

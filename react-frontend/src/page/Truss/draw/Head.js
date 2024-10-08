@@ -14,7 +14,9 @@ const Head = ({
     selectedLineSet,
     linesSet,
     zoomScaleSet,
-    offsetSet
+    offsetSet,
+    loadsSet,
+    selectedLoadSet
 }) => {
     const [penType] = useContext(penTypeContext)
     const [selectedPoint] = selectedPointSet
@@ -31,6 +33,8 @@ const Head = ({
     const [lines, setLines] = linesSet
     const [zoomScale, setZoomScale] = zoomScaleSet
     const [offset, setOffset] = offsetSet
+    const [loads, setLoads] = loadsSet
+    const [selectedLoad, setSelectedLoad] = selectedLoadSet
 
     useEffect(() => {
         if (selectedPoint !== -1) {
@@ -126,36 +130,73 @@ const Head = ({
                         </option>
                     ))}
                 </select>
-                &nbsp E：
-                <span className="list">{lineMakings[makingIdx].E}</span>&nbsp
+                &nbsp; E：
+                <span className="list">{lineMakings[makingIdx].E}</span>&nbsp;
                 A：<span className="list">{lineMakings[makingIdx].A}</span>
-                &nbsp ρ：
+                &nbsp; ρ：
                 <span className="list">{lineMakings[makingIdx].rho}</span>
-                &nbsp&nbsp
+                &nbsp;&nbsp;
                 <input
                     type="color"
                     className="color"
                     disabled
                     value={lineMakings[makingIdx].color}
                 ></input>
-            </div>
+                <button
+                    onClick={() => {
+                        setLines(lines.filter((_, idx) => idx !== selectedLine))
+                        setSelectedLine(-1)
+                    }}>
+                    删除
+                </button>
+            </div >
         )
     } else if (penType === "constraint2") {
         // 不做任何操作
     } else if (penType === "constraint1") {
-        headTable = <>
-            角度：
-            <input
-                type="number"
-                className="constraint"
-                value={points[selectedPoint].alpha / Math.PI * 180}
-                onChange={(e) => setPoints(points.map((point, idx) => {
-                    return idx === selectedPoint ? { ...point, alpha: e.target.value / 180 * Math.PI } : point
-                }))}
-            ></input>
-        </>
+        if (points[selectedPoint]) {
+            headTable = <>
+                角度：
+                <input
+                    type="number"
+                    className="constraint"
+                    value={points[selectedPoint].alpha / Math.PI * 180}
+                    onChange={(e) => setPoints(points.map((point, idx) => {
+                        return idx === selectedPoint ? { ...point, alpha: e.target.value / 180 * Math.PI } : point
+                    }))}
+                ></input>
+            </>
+        }
     } else if (penType === "load") {
-        // 不做任何操作
+        if (selectedLoad !== -1) {
+            headTable = <>
+                Fx：
+                <input
+                    type="number"
+                    className="load"
+                    value={loads[selectedLoad].Fx}
+                    onChange={(e) => setLoads([...loads.map((load, idx) =>
+                        idx === selectedLoad ? { ...load, Fx: e.target.value } : load
+                    )])}
+                ></input>
+                Fy：
+                <input
+                    type="number"
+                    className="load"
+                    value={loads[selectedLoad].Fy}
+                    onChange={(e) => setLoads([...loads.map((load, idx) =>
+                        idx === selectedLoad ? { ...load, Fy: e.target.value } : load
+                    )])}
+                ></input>
+                <button
+                    onClick={() => {
+                        setLoads(loads.filter((_, idx) => idx !== selectedLoad))
+                        setSelectedLoad(-1)
+                    }}>
+                    删除
+                </button>
+            </>
+        }
     }
 
     const onLiClick = (penTy) => {
