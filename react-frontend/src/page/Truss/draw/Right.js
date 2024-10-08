@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
 import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from "./context"
-import { drawDataContext } from "../context"
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
@@ -28,8 +27,9 @@ const Right = () => {
     const [lineMakings,] = useContext(lineMakingsContext)
     const [loads, setLoads] = useState([])
     const [selectedLoad, setSelectedLoad] = useState(-1)
-    const [, setDrawData] = useContext(drawDataContext)
-
+    const [drawData, setDrawData] = useState({})
+    const channel = new BroadcastChannel("truss")
+    
     useEffect(() => {
         if (loads.length === 0) {
             setDrawData({
@@ -37,6 +37,8 @@ const Right = () => {
                 lines: lines,
                 points: points,
             })
+            channel.postMessage(drawData)
+            console.log("drawData", drawData)
         }
     }, [lines, points])
 
@@ -117,29 +119,29 @@ const Right = () => {
     }
 
     const drawArrow = (ctx, fromX, fromY, toX, toY, arrowWidth = 10, color = 'black') => {
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = color
+        ctx.fillStyle = color
+        ctx.lineWidth = 2
 
-        const angle = Math.atan2(toY - fromY, toX - fromX);
+        const angle = Math.atan2(toY - fromY, toX - fromX)
 
-        ctx.beginPath();
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-        ctx.stroke();
+        ctx.beginPath()
+        ctx.moveTo(fromX, fromY)
+        ctx.lineTo(toX, toY)
+        ctx.stroke()
 
-        const headLength = arrowWidth;
-        const arrowX1 = toX - headLength * Math.cos(angle - Math.PI / 6);
-        const arrowY1 = toY - headLength * Math.sin(angle - Math.PI / 6);
-        const arrowX2 = toX - headLength * Math.cos(angle + Math.PI / 6);
-        const arrowY2 = toY - headLength * Math.sin(angle + Math.PI / 6);
+        const headLength = arrowWidth
+        const arrowX1 = toX - headLength * Math.cos(angle - Math.PI / 6)
+        const arrowY1 = toY - headLength * Math.sin(angle - Math.PI / 6)
+        const arrowX2 = toX - headLength * Math.cos(angle + Math.PI / 6)
+        const arrowY2 = toY - headLength * Math.sin(angle + Math.PI / 6)
 
-        ctx.beginPath();
-        ctx.moveTo(toX, toY);
-        ctx.lineTo(arrowX1, arrowY1);
-        ctx.lineTo(arrowX2, arrowY2);
-        ctx.closePath();
-        ctx.fill();
+        ctx.beginPath()
+        ctx.moveTo(toX, toY)
+        ctx.lineTo(arrowX1, arrowY1)
+        ctx.lineTo(arrowX2, arrowY2)
+        ctx.closePath()
+        ctx.fill()
     }
 
     // canvas元素绘制

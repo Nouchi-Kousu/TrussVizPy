@@ -1,13 +1,17 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
-import { drawDataContext } from "../context"
 
 const Draw = () => {
     const canvasRef = useRef(null) // 储存画布的引用
     const [zoomScale, setZoomScale] = useState(10)
     const [offset, setOffset] = useState({ x: 50, y: 50 }) // 原点平移量
-    const [drawData, setDrawData] = useContext(drawDataContext)
-
+    const [test, setTast] = useState(null)
+    const [drawData, setDrawData] = useState({
+        isLoad: false,
+        lines: [],
+        points: [],
+    })
+    
     // 更改canvas大小
     const resizeCanvas = () => {
         const canvas = canvasRef.current
@@ -16,6 +20,21 @@ const Draw = () => {
             canvas.height = canvas.clientHeight
         }
     }
+    
+    useEffect(() => {
+        const channel = new BroadcastChannel("truss")
+        const headleMessage = (event) => {
+            console.log(event)
+            const data = event.data
+            if (data.points) {
+                setDrawData(data)
+            }
+        }
+        channel.onmessage = headleMessage
+        return () => {
+            channel.close()
+        }
+    }, [])
 
     // 挂载大小改变
     useEffect(() => {
@@ -25,7 +44,6 @@ const Draw = () => {
             window.removeEventListener("resize", resizeCanvas)
         }
     }, [])
-
 
     // canvas元素绘制
     useEffect(() => {
@@ -39,7 +57,7 @@ const Draw = () => {
 
         context.clearRect(-offset.x, -offset.y, canvas.width, canvas.height) // 清空整个画布
         context.beginPath()
-        context.strokeStyle = '#000000'
+        context.strokeStyle = "#000000"
         context.lineWidth = 2
         context.moveTo(0, 0)
         context.lineTo(60, 0) // x 轴
@@ -64,11 +82,11 @@ const Draw = () => {
                 } else {
                     context.lineTo(end.x, end.y)
                 }
-                context.strokeStyle = '#39c5bb'
+                context.strokeStyle = "#39c5bb"
                 context.lineWidth = 2
                 context.stroke()
                 context.closePath()
-                context.shadowColor = 'transparent' // 关闭阴影
+                context.shadowColor = "transparent" // 关闭阴影
                 context.shadowBlur = 0
                 context.shadowOffsetX = 0
                 context.shadowOffsetY = 0
@@ -90,23 +108,11 @@ const Draw = () => {
             context.fill()
             if (point.constraint === 2) {
                 context.beginPath()
-                context.moveTo(
-                    point.x * zoomScale,
-                    point.y * zoomScale
-                )
-                context.lineTo(
-                    point.x * zoomScale - 12,
-                    point.y * zoomScale
-                )
-                context.lineTo(
-                    point.x * zoomScale,
-                    point.y * zoomScale - 12
-                )
-                context.lineTo(
-                    point.x * zoomScale,
-                    point.y * zoomScale
-                )
-                context.strokeStyle = 'black'
+                context.moveTo(point.x * zoomScale, point.y * zoomScale)
+                context.lineTo(point.x * zoomScale - 12, point.y * zoomScale)
+                context.lineTo(point.x * zoomScale, point.y * zoomScale - 12)
+                context.lineTo(point.x * zoomScale, point.y * zoomScale)
+                context.strokeStyle = "black"
                 context.lineWidth = 2
                 context.stroke()
                 context.closePath()
@@ -120,7 +126,7 @@ const Draw = () => {
                     point.x * zoomScale + 12 * Math.cos(point.alpha),
                     point.y * zoomScale + 12 * Math.sin(point.alpha)
                 )
-                context.strokeStyle = 'black'
+                context.strokeStyle = "black"
                 context.lineWidth = 2
                 context.stroke()
                 context.closePath()
@@ -131,10 +137,7 @@ const Draw = () => {
     return (
         <div className="show">
             <Head />
-            <canvas
-                ref={canvasRef}
-                className="canvas"
-            ></canvas>
+            <canvas ref={canvasRef} className="canvas"></canvas>
         </div>
     )
 }
