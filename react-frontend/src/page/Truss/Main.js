@@ -22,7 +22,7 @@ const TrussMain = () => {
     const [points, setPoints] = useState([])
     const [lines, setLines] = useState([])
     const [constraintNums, setConstraintNums] = useState(0)
-    const [drawData, setDrawData] = useState({})
+    const [drawData, setDrawData] = useState({ isLoad: false, lines: [], points: [] })
 
     return (
         <drawDataContext.Provider value={[drawData, setDrawData]}>
