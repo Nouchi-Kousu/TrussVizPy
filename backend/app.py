@@ -1,6 +1,11 @@
 import math
-from TrussPy import TrussPy, prepare_input, Point, Line, Load, Input_Data
+
+import scipy
+import scipy.linalg
+from TrussPy import prepare_input, Point, Line, Load, Input_Data, Bidirectional_Map
 from rich import print
+import TrussPy as tp
+
 
 truss:Input_Data = {
     'point': [
@@ -47,6 +52,9 @@ truss:Input_Data = {
 input_data = prepare_input(truss)
 # for line in input_data['line']:
 #     print(np.rad2deg(line['theta']))
-result = TrussPy(input_data)
+point_map = Bidirectional_Map()
+gem, gl = tp.get_global_stiffness_matrix_and_gravity_load(input_data, point_map)
+load = tp.get_load_matrix(input_data, gl, point_map)
+result = scipy.linalg.solve(gem, load)
 
 print(result)
