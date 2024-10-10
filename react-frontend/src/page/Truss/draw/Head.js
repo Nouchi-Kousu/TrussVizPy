@@ -160,9 +160,9 @@ const Head = ({
                 <input
                     type="number"
                     className="constraint"
-                    value={points[selectedPoint].alpha / Math.PI * 180}
+                    value={points[selectedPoint].theta / Math.PI * 180}
                     onChange={(e) => setPoints(points.map((point, idx) => {
-                        return idx === selectedPoint ? { ...point, alpha: e.target.value / 180 * Math.PI } : point
+                        return idx === selectedPoint ? { ...point, theta: e.target.value / 180 * Math.PI } : point
                     }))}
                 ></input>
             </>

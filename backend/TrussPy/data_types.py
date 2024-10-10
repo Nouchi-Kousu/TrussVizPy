@@ -50,32 +50,31 @@ class Load(TypedDict):
 
 
 class Input_Data(TypedDict):
-    point: List[Point]
-    line: List[Line_input]
-    load: List[Load]
+    points: List[Point]
+    lines: List[Line_input]
+    loads: List[Load]
     constraint_nums: int
 
 
 class Frontend_Input_Data(TypedDict):
     # 前端通过GET方法传递的桁架结构相关的输入数据
-    point: List[Point]
-    line: List[Line]
-    load: List[Load]
+    points: List[Point]
+    lines: List[Line]
+    loads: List[Load]
     constraint_nums: int
 
 
 class Calculation_Result_Data(TypedDict):
     # 后端进行桁架结构计算后生成的结果数据
-    point: List[Point_Output]
-    line: List[Line]
-    load: List[Load]
-    constraint_nums: int
+    points: List[Point_Output]
+    lines: List[Line]
+    loads: List[Load]
 
 
 class Visualization_Data(TypedDict):
     # 后端将计算结果处理后返回给前端，用于可视化展示的结果数据
-    point: List[Point_Output]
-    line: List[Line_Force]
+    points: List[Point_Output]
+    lines: List[Line_Force]
 
 
 def point_init(x: float, y: float, Constraint_Type: Literal[0, 1, 2] = 0, theta: float = 0):
