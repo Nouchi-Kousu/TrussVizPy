@@ -64,9 +64,9 @@ class Bidirectional_Map():
 
     def has_point(self, point):
         return point in self.point_to_idx
-    
+
     def has_idx(self, idx):
-        return idx < len(self.idx_to_point
+        return idx < len(self.idx_to_point)
 
 
 if __name__ == '__main__':
