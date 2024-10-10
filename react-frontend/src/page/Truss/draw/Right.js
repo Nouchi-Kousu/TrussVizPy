@@ -229,7 +229,7 @@ const Right = () => {
             )
             context.fillStyle = idx === selectedPoint ? "red" : "blue"
             context.fill()
-            if (point.constraint === 2) {
+            if (point.Constraint_Type === 2) {
                 context.beginPath()
                 context.moveTo(
                     point.x * zoomScale,
@@ -251,15 +251,15 @@ const Right = () => {
                 context.lineWidth = 2
                 context.stroke()
                 context.closePath()
-            } else if (point.constraint === 1) {
+            } else if (point.Constraint_Type === 1) {
                 context.beginPath()
                 context.moveTo(
-                    point.x * zoomScale - 12 * Math.cos(point.alpha),
-                    point.y * zoomScale - 12 * Math.sin(point.alpha)
+                    point.x * zoomScale - 12 * Math.cos(point.theta),
+                    point.y * zoomScale - 12 * Math.sin(point.theta)
                 )
                 context.lineTo(
-                    point.x * zoomScale + 12 * Math.cos(point.alpha),
-                    point.y * zoomScale + 12 * Math.sin(point.alpha)
+                    point.x * zoomScale + 12 * Math.cos(point.theta),
+                    point.y * zoomScale + 12 * Math.sin(point.theta)
                 )
                 context.strokeStyle = 'black'
                 context.lineWidth = 2
@@ -363,7 +363,7 @@ const Right = () => {
                             idx === clickedPointIndex
                                 ? {
                                     ...point,
-                                    constraint: point.constraint === 2 ? 0 : 2,
+                                    Constraint_Type: point.Constraint_Type === 2 ? 0 : 2,
                                 }
                                 : point
                         )
@@ -378,8 +378,8 @@ const Right = () => {
                             idx === clickedPointIndex
                                 ? {
                                     ...point,
-                                    constraint: point.constraint === 1 ? 0 : 1,
-                                    alpha: 0
+                                    Constraint_Type: point.Constraint_Type === 1 ? 0 : 1,
+                                    theta: 0
                                 }
                                 : point
                         )

@@ -137,7 +137,7 @@ const Draw = () => {
             )
             context.fillStyle = "blue"
             context.fill()
-            if (point.constraint === 2) {
+            if (point.Constraint_Type === 2) {
                 context.beginPath()
                 context.moveTo(point.x * zoomScale, point.y * zoomScale)
                 context.lineTo(point.x * zoomScale - 12, point.y * zoomScale)
@@ -147,15 +147,15 @@ const Draw = () => {
                 context.lineWidth = 2
                 context.stroke()
                 context.closePath()
-            } else if (point.constraint === 1) {
+            } else if (point.Constraint_Type === 1) {
                 context.beginPath()
                 context.moveTo(
-                    point.x * zoomScale - 12 * Math.cos(point.alpha),
-                    point.y * zoomScale - 12 * Math.sin(point.alpha)
+                    point.x * zoomScale - 12 * Math.cos(point.theta),
+                    point.y * zoomScale - 12 * Math.sin(point.theta)
                 )
                 context.lineTo(
-                    point.x * zoomScale + 12 * Math.cos(point.alpha),
-                    point.y * zoomScale + 12 * Math.sin(point.alpha)
+                    point.x * zoomScale + 12 * Math.cos(point.theta),
+                    point.y * zoomScale + 12 * Math.sin(point.theta)
                 )
                 context.strokeStyle = "black"
                 context.lineWidth = 2

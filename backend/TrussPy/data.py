@@ -4,7 +4,7 @@ from scipy.spatial.distance import euclidean
 
 
 def Input_to_Frontend_Input(input_data: Input_Data):
-    points = input_data['point'].copy()
+    points = input_data['points'].copy()
 
     def Line_Input_to_Line(line_input: Line_input) -> Line:
         start = points[line_input['points'][0]]
@@ -16,31 +16,32 @@ def Input_to_Frontend_Input(input_data: Input_Data):
         return Line(points=line_input['points'], L=L, E=line_input['E'], k=k, theta=theta, m=m)
 
     lines = [Line_Input_to_Line(line_input)
-             for line_input in input_data['line']]
+             for line_input in input_data['lines']]
 
     return Frontend_Input_Data(
         constraint_nums=input_data['constraint_nums'],
-        point=points,
-        line=lines,
-        load=input_data['load']
+        points=points,
+        lines=lines,
+        loads=input_data['loads']
     )
 
 
 def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
-    points = calculation_result['point'].copy()
+    points = calculation_result['points'].copy()
 
     def Line_to_Line_Force(line: Line) -> Line_Force:
         start = points[line['points'][0]]
         end = points[line['points'][1]]
-        sigma = (euclidean([start['x'], start['y']], [end['x'], end['y']]) - line['L']) / line['L'] * line['E']
+        sigma = (euclidean([start['x'] + start['dx'], start['y'] + start['dy']],
+                 [end['x'] + end['dx'], end['y'] + end['dy']]) - line['L']) / line['L'] * line['E']
         return Line_Force(points=(line['points'][0], line['points'][1]), sigma=sigma)
 
     line_forces = [Line_to_Line_Force(line)
-                   for line in calculation_result['line']]
+                   for line in calculation_result['lines']]
 
     visualization_data = Visualization_Data(
-        point=calculation_result['point'].copy(),
-        line=line_forces
+        points=calculation_result['points'].copy(),
+        lines=line_forces
     )
 
     return visualization_data
@@ -61,6 +62,12 @@ class Bidirectional_Map():
 
     def get_point(self, idx):
         return self.idx_to_point[idx]
+
+    def has_point(self, point):
+        return point in self.point_to_idx
+
+    def has_idx(self, idx):
+        return idx < len(self.idx_to_point)
 
 
 if __name__ == '__main__':
