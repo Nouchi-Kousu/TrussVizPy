@@ -25,6 +25,7 @@ def Input_to_Frontend_Input(input_data: Input_Data):
         loads=input_data['loads']
     )
 
+# TODO 前端传入数据转为计算用数据
 
 def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
     points = calculation_result['points'].copy()

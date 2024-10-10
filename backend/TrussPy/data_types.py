@@ -77,6 +77,7 @@ class Frontend_Input_Data(TypedDict):
     loads: List[Load]
     makings: List[Making]
 
+# TODO 用于计算的数据结构
 
 class Calculation_Result_Data(TypedDict):
     # 后端进行桁架结构计算后生成的结果数据
