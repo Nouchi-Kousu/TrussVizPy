@@ -1,3 +1,4 @@
+from math import inf, pi
 from typing import List
 from .data import Calculation_Result_to_Visualization, Bidirectional_Map
 from .data_types import Calculation_Result_Data, Frontend_Input_Data, Point, point_output
@@ -17,13 +18,14 @@ def get_global_stiffness_matrix_and_gravity_load(input_data: Frontend_Input_Data
             if input_data['points'][point_idx]['Constraint_Type'] == 0:
                 gsm_idx = point_map.get_idx(point_idx) * 2
                 esm = Get_Element_Stiffness_Matrix(line['k'], line['theta'])
-                global_stiffness_matrix[gsm_idx:gsm_idx +
-                                        2, gsm_idx:gsm_idx+2] += esm
+                global_stiffness_matrix[gsm_idx:gsm_idx + 2, gsm_idx:gsm_idx+2] += esm
                 load_matrix[gsm_idx+1] += line['m'] * g
 
             elif input_data['points'][point_idx]['Constraint_Type'] == 1:
-                # TODO 滑动铰支座
-                ...
+                esm = Get_Element_Stiffness_Matrix(
+                    9e100, input_data['points'][point_idx]['theta'] + pi / 2)
+                gsm_idx = point_map.get_idx(point_idx) * 2
+                global_stiffness_matrix[gsm_idx:gsm_idx + 2, gsm_idx:gsm_idx+2] += esm
 
         # 处理非对角元
         if input_data['points'][line['points'][0]]['Constraint_Type'] != 2 and input_data['points'][line['points'][1]]['Constraint_Type'] != 2:
@@ -66,7 +68,6 @@ def get_output_points(input_points: List[Point], point_displacement, point_map: 
 
 
 def main(input_data: Frontend_Input_Data):
-    idx_num = len(input_data['points']) - input_data['constraint_nums']
     point_map = Bidirectional_Map()
     global_stiffness_matrix, gravity_load = get_global_stiffness_matrix_and_gravity_load(
         input_data, point_map)

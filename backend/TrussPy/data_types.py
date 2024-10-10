@@ -35,6 +35,11 @@ class Line_input(TypedDict):
     A: float
     rho: float
 
+class Frontend_Line(TypedDict):
+    # 前端传入的杆件数据结构
+    points: Tuple[int, int]
+    makingsIdx: int
+
 
 class Line_Force(TypedDict):
     # 应力杆件数据结构
@@ -49,6 +54,15 @@ class Load(TypedDict):
     Fy: float
 
 
+class Making(TypedDict):
+    # 材料数据结构
+    name: NotRequired[str]
+    E: float
+    A: float
+    rho: float
+    color: NotRequired[str]
+
+
 class Input_Data(TypedDict):
     points: List[Point]
     lines: List[Line_input]
@@ -59,9 +73,9 @@ class Input_Data(TypedDict):
 class Frontend_Input_Data(TypedDict):
     # 前端通过GET方法传递的桁架结构相关的输入数据
     points: List[Point]
-    lines: List[Line]
+    lines: List[Frontend_Line]
     loads: List[Load]
-    constraint_nums: int
+    makings: List[Making]
 
 
 class Calculation_Result_Data(TypedDict):

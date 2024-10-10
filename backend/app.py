@@ -3,13 +3,13 @@ from time import time
 import scipy
 import scipy.linalg
 from TrussPy import prepare_input, Point, Line, Load, Input_Data, Bidirectional_Map
-# from rich import print
+from rich import print
 import TrussPy as tp
 
 
 truss: Input_Data = {
     'points': [
-        Point(0, 0, 2),
+        Point(0, 0, 1, 0),
         Point(1, 0, 2),
         Point(0.5, math.sqrt(3)/6),
         Point(0.5, math.sqrt(3)/2)
@@ -23,9 +23,9 @@ truss: Input_Data = {
         Line((0, 1), 48e5, 1)
     ],
     'loads': [
-        Load(3, 90.710, -70.710),
+        Load(3, 1190.710, -70.710),
     ],
-    'constraint_nums': 2
+    'constraint_nums': 1
 }
 
 # truss: Input_Data = {
@@ -58,5 +58,5 @@ input_data = prepare_input(truss)
 # result = scipy.linalg.solve(gem, load)
 result = tp.main(input_data)
 
-# print(result)
+print(result)
 print((time() - time_start)*1000)
