@@ -28,6 +28,7 @@ const Right = () => {
     const [loads, setLoads] = useState([])
     const [selectedLoad, setSelectedLoad] = useState(-1)
     const [drawData, setDrawData] = useState({})
+    const [resize, setResize] = useState(false)
     const channel = new BroadcastChannel("truss")
     
     useEffect(() => {
@@ -45,6 +46,7 @@ const Right = () => {
 
     // 更改canvas大小
     const resizeCanvas = () => {
+        setResize(n => !n)
         const canvas = canvasRef.current
         if (canvas) {
             canvas.width = canvas.clientWidth
@@ -265,7 +267,7 @@ const Right = () => {
                 context.closePath()
             }
         })
-    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad])
+    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad, resize])
 
     // 删除点
     useEffect(() => {
