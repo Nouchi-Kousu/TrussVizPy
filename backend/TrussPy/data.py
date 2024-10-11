@@ -25,10 +25,9 @@ def Input_to_Computational_Data(input_data: Input_Data):
         loads=input_data['loads']
     )
 
-# TODO 前端传入数据转为计算用数据
-
 
 def Fronted_to_Computational_Data(frontend_input_data: Frontend_Input_Data):
+    # 前端传入数据转为计算用数据
     points = frontend_input_data['points'].copy()
     makings = frontend_input_data['makings'].copy()
 
@@ -55,6 +54,7 @@ def Fronted_to_Computational_Data(frontend_input_data: Frontend_Input_Data):
         lines=lines,
         loads=frontend_input_data['loads']
     )
+
 
 def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
     points = calculation_result['points'].copy()
