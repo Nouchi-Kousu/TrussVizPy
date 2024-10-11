@@ -77,7 +77,13 @@ class Frontend_Input_Data(TypedDict):
     loads: List[Load]
     makings: List[Making]
 
-# TODO 用于计算的数据结构
+
+class Computational_Data(TypedDict):
+    # 用于计算的数据结构
+    points: List[Point]
+    lines: List[Line]
+    loads: List[Load]
+    constraint_nums: int
 
 class Calculation_Result_Data(TypedDict):
     # 后端进行桁架结构计算后生成的结果数据
@@ -106,3 +112,9 @@ def load_init(point: int, Fx: float, Fy: float):
 
 def point_output(point: Point, dx: float = 0, dy: float = 0):
     return Point_Output(x=point['x'], y=point['y'], dx=dx, dy=dy, Constraint_Type=point['Constraint_Type'], theta=point['theta'])
+
+def making_init(E: float, A: float, rho: float):
+    return Making(E=E, A=A, rho=rho)
+
+def frontend_line_init(points: Tuple[int, int], makingsIdx: int):
+    return Frontend_Line(points=points, makingsIdx=makingsIdx)

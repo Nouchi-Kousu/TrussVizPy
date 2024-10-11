@@ -1,12 +1,12 @@
 from math import inf, pi
 from typing import List
 from .data import Calculation_Result_to_Visualization, Bidirectional_Map
-from .data_types import Calculation_Result_Data, Frontend_Input_Data, Point, point_output
+from .data_types import Calculation_Result_Data, Computational_Data, Frontend_Input_Data, Point, point_output
 import numpy as np
 from .truss import Get_Element_Stiffness_Matrix, LULT_Decomposition_Solver
 
 
-def get_global_stiffness_matrix_and_gravity_load(input_data: Frontend_Input_Data, point_map, g: float = 9.8):
+def get_global_stiffness_matrix_and_gravity_load(input_data: Computational_Data, point_map, g: float = 9.8):
     idx_num = len(input_data['points']) - input_data['constraint_nums']
     global_stiffness_matrix = np.zeros((idx_num*2, idx_num*2))
     # point_map = Bidirectional_Map()
@@ -38,7 +38,7 @@ def get_global_stiffness_matrix_and_gravity_load(input_data: Frontend_Input_Data
     return global_stiffness_matrix, load_matrix
 
 
-def get_load_matrix(input_data: Frontend_Input_Data, gravity_load, point_map):
+def get_load_matrix(input_data: Computational_Data, gravity_load, point_map):
     idx_num = len(input_data['points']) - input_data['constraint_nums']
     load_matrix = np.zeros((idx_num*2, 1))
     for load in input_data['loads']:
@@ -67,7 +67,7 @@ def get_output_points(input_points: List[Point], point_displacement, point_map: 
     return output_points
 
 
-def main(input_data: Frontend_Input_Data):
+def main(input_data: Computational_Data):
     point_map = Bidirectional_Map()
     global_stiffness_matrix, gravity_load = get_global_stiffness_matrix_and_gravity_load(
         input_data, point_map)

@@ -1,9 +1,9 @@
 import math
-from .data_types import Calculation_Result_Data, Visualization_Data, Line_Force, Line, Input_Data, Line_input, Frontend_Input_Data
+from .data_types import Calculation_Result_Data, Computational_Data, Frontend_Line, Visualization_Data, Line_Force, Line, Input_Data, Line_input, Frontend_Input_Data
 from scipy.spatial.distance import euclidean
 
 
-def Input_to_Frontend_Input(input_data: Input_Data):
+def Input_to_Computational_Data(input_data: Input_Data):
     points = input_data['points'].copy()
 
     def Line_Input_to_Line(line_input: Line_input) -> Line:
@@ -18,7 +18,7 @@ def Input_to_Frontend_Input(input_data: Input_Data):
     lines = [Line_Input_to_Line(line_input)
              for line_input in input_data['lines']]
 
-    return Frontend_Input_Data(
+    return Computational_Data(
         constraint_nums=input_data['constraint_nums'],
         points=points,
         lines=lines,
@@ -26,6 +26,35 @@ def Input_to_Frontend_Input(input_data: Input_Data):
     )
 
 # TODO 前端传入数据转为计算用数据
+
+
+def Fronted_to_Computational_Data(frontend_input_data: Frontend_Input_Data):
+    points = frontend_input_data['points'].copy()
+    makings = frontend_input_data['makings'].copy()
+
+    def Line_to_Line_input(line_input: Frontend_Line) -> Line:
+        start = points[line_input['points'][0]]
+        end = points[line_input['points'][1]]
+        theta = math.atan2(end['y'] - start['y'], end['x'] - start['x'])
+        making = makings[line_input['makingsIdx']]
+        L = euclidean([start['x'], start['y']], [end['x'], end['y']])
+        k = making['A'] * making['E'] / L
+        m = making['rho'] * L * making['A']
+        return Line(points=line_input['points'], L=L, E=making['E'], k=k, theta=theta, m=m)
+
+    lines = [Line_to_Line_input(line_input)
+             for line_input in frontend_input_data['lines']]
+    constraint_nums = 0
+    for point in points:
+        if point['Constraint_Type'] == 2:
+            constraint_nums += 1
+
+    return Computational_Data(
+        constraint_nums=constraint_nums,
+        points=points,
+        lines=lines,
+        loads=frontend_input_data['loads']
+    )
 
 def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_Data):
     points = calculation_result['points'].copy()
