@@ -58,19 +58,19 @@ const Head = ({
     if (penType === "grab") {
         headTable = <>
             <div className="grab">
-                移动：x
+                <span>移动：x:</span>
                 <input
                     type="number"
                     value={offset.x}
                     onChange={(e) => setOffset({ ...offset, x: Number(e.target.value) })}
                 />
-                y
+                <span>y:</span>
                 <input
                     type="number"
                     value={offset.y}
                     onChange={(e) => setOffset({ ...offset, y: Number(e.target.value) })}
                 />
-                缩放比例：
+                <span>缩放比例:</span>
                 <input
                     type="number"
                     value={zoomScale}
@@ -82,23 +82,25 @@ const Head = ({
         if (selectedPoint !== -1) {
             headTable = (
                 <div className="point">
+                    <span>x:</span>
                     <input
                         type="number"
                         value={xValue}
                         onChange={(e) => handleInputChange(e, setXValue, "x")}
                     />
+                    <span>y:</span>
                     <input
                         type="number"
                         value={yValue}
                         onChange={(e) => handleInputChange(e, setYValue, "y")}
                     />
-                    <button
+                    <span className="button"
                         onClick={() => {
                             setDelPoint(selectedPoint)
                         }}
                     >
                         删除
-                    </button>
+                    </span>
                 </div>
             )
         }
@@ -106,7 +108,7 @@ const Head = ({
         const makingIdx = selectedLine === -1 ? lineMakingsIdx : lines[selectedLine].makingsIdx
         headTable = (
             <div className="line">
-                材料名：
+                <span>材料名:</span>
                 <select
                     value={makingIdx}
                     onChange={(e) => {
@@ -126,25 +128,25 @@ const Head = ({
                         </option>
                     ))}
                 </select>
-                &nbsp; E：
-                <span className="list">{lineMakings[makingIdx].E}</span>&nbsp;
-                A：<span className="list">{lineMakings[makingIdx].A}</span>
-                &nbsp; ρ：
+                <span>E:</span>
+                <span className="list">{lineMakings[makingIdx].E}</span>
+                <span>A:</span>
+                <span className="list">{lineMakings[makingIdx].A}</span>
+                <span>ρ:</span>
                 <span className="list">{lineMakings[makingIdx].rho}</span>
-                &nbsp;&nbsp;
                 <input
                     type="color"
                     className="color"
                     disabled
                     value={lineMakings[makingIdx].color}
                 ></input>
-                <button
+                <span className="button"
                     onClick={() => {
                         setLines(lines.filter((_, idx) => idx !== selectedLine))
                         setSelectedLine(-1)
                     }}>
                     删除
-                </button>
+                </span>
             </div >
         )
     } else if (penType === "constraint2") {
@@ -152,7 +154,9 @@ const Head = ({
     } else if (penType === "constraint1") {
         if (points[selectedPoint]) {
             headTable = <>
-                角度：
+                <span>
+                    角度:
+                </span>
                 <input
                     type="number"
                     className="constraint"
@@ -166,7 +170,7 @@ const Head = ({
     } else if (penType === "load") {
         if (selectedLoad !== -1) {
             headTable = <>
-                Fx：
+                <span>Fx:</span>
                 <input
                     type="number"
                     className="load"
@@ -175,7 +179,7 @@ const Head = ({
                         idx === selectedLoad ? { ...load, Fx: e.target.value } : load
                     )])}
                 ></input>
-                Fy：
+                <span>Fy:</span>
                 <input
                     type="number"
                     className="load"
@@ -184,13 +188,13 @@ const Head = ({
                         idx === selectedLoad ? { ...load, Fy: e.target.value } : load
                     )])}
                 ></input>
-                <button
+                <span className="button"
                     onClick={() => {
                         setLoads(loads.filter((_, idx) => idx !== selectedLoad))
                         setSelectedLoad(-1)
                     }}>
                     删除
-                </button>
+                </span>
             </>
         }
     }
@@ -210,7 +214,9 @@ const Head = ({
                 className={penType}
                 onClick={() => onLiClick(penType)}
             ></li>
-            {headTable}
+            <div className="headdiv">
+                {headTable}
+            </div>
         </div>
     )
 }

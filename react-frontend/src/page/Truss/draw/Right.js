@@ -11,7 +11,7 @@ const Right = () => {
         x: 0,
         y: 0,
     }) // 鼠标位置
-    const [zoomScale, setZoomScale] = useState(10)
+    const [zoomScale, setZoomScale] = useState(1)
     const [offset, setOffset] = useState({ x: 50, y: 50 }) // 原点平移量
     const [mouseDown, setMouseDown] = useState(-1) // 鼠标摁下
     const [isCtrlPressed, setIsCtrlPressed] = useState(false) // 是否按下ctrl键
@@ -49,6 +49,7 @@ const Right = () => {
         setResize(n => !n)
         const canvas = canvasRef.current
         if (canvas) {
+            console.log(canvas.clientHeight)
             canvas.width = canvas.clientWidth
             canvas.height = canvas.clientHeight
         }
@@ -153,6 +154,7 @@ const Right = () => {
 
         // 每次更新坐标系时，重置之前的变换
         context.setTransform(1, 0, 0, 1, 0, 0) // 重置所有变换
+        console.log(canvas.height)
         context.translate(offset.x, canvas.height - offset.y) // 平移原点
         context.scale(1, -1) // 翻转 y 轴
 
