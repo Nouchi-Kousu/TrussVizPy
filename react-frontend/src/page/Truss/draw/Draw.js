@@ -5,7 +5,7 @@ import { penTypeContext, makingsContext, linesContext, lineMakingsIdxContext, li
 import { useState } from "react"
 
 const Draw = () => {
-    const [penType, setPenType] = useState("choose")
+    const [penType, setPenType] = useState("grab")
     const [makingsSeting, setMakingsSetting] = useState(false)
     const [lineMakings, setLineMakings] = useState([{ name: 'Normal', E: 4.8e6, A: 1, rho: 0, color: '#66ccff' }]) // 储存材料
     const [lineMakingsIdx, setLineMakingsIdx] = useState(0)

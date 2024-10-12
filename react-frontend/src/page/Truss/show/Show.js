@@ -153,7 +153,7 @@ const Draw = () => {
                         drawData.points[end].y * zoomScale
                     )
                 } else {
-                    context.lineTo(end.x, end.y)
+                    context.lineTo(end.x * zoomScale, end.y * zoomScale)
                 }
                 context.strokeStyle = "#39c5bb"
                 context.lineWidth = 2

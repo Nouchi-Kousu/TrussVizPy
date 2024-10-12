@@ -55,11 +55,7 @@ const Head = ({
     }
 
     let headTable = <></>
-    if (penType === "choose") {
-        if (selectedPoint) {
-            headTable = <>111</>
-        }
-    } else if (penType === "grab") {
+    if (penType === "grab") {
         headTable = <>
             <div className="grab">
                 移动：x

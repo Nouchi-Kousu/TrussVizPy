@@ -204,7 +204,7 @@ const Right = () => {
                     points[end].y * zoomScale
                 )
             } else {
-                context.lineTo(end.x, end.y)
+                context.lineTo(end.x * zoomScale, end.y * zoomScale)
             }
             context.strokeStyle = lineMakings[line.makingsIdx].color
             context.lineWidth = idx === selectedLine ? 4 : 2
@@ -446,7 +446,7 @@ const Right = () => {
                     idx === selectedLine
                         ? {
                             ...line,
-                            points: [line.points[0], { x: x, y: y }],
+                            points: [line.points[0], { x: x / zoomScale, y: y / zoomScale }],
                         }
                         : line
                 )
