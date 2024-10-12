@@ -30,7 +30,7 @@ const Right = () => {
     const [drawData, setDrawData] = useState({})
     const [resize, setResize] = useState(false)
     const channel = new BroadcastChannel("truss")
-    
+
     useEffect(() => {
         if (loads.length === 0) {
             setDrawData({
@@ -565,13 +565,15 @@ const Right = () => {
                 loadsSet={[loads, setLoads]}
                 selectedLoadSet={[selectedLoad, setSelectedLoad]}
             />
-            <canvas
-                ref={canvasRef}
-                className="canvas"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            ></canvas>
+            <div className="canvas">
+                <canvas
+                    ref={canvasRef}
+                    className="canvas"
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                ></canvas>
+            </div>
         </div>
     )
 }

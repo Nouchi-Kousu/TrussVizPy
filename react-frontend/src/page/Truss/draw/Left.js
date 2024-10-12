@@ -3,7 +3,6 @@ import { penTypeContext } from './context'
 
 const Left = () => {
     const button = [
-        "choose",
         "grab",
         "point",
         "line",
@@ -11,18 +10,30 @@ const Left = () => {
         "constraint1",
         "load",
     ]
-    const [, setPenType] = useContext(penTypeContext)
+    const [penType, setPenType] = useContext(penTypeContext)
 
     const buttons = button.map((item, idx) => (
-        <li className={item} key={item} onClick={() => setPenType(item)}>
-            {item}
+        penType === item ? <li className={`${item} clicked`} key={item} onClick={() => setPenType(item)}>
+            <div className="box">
+                <div className={item}></div>
+            </div>
         </li>
+            : <li className={`${item}`} key={item} onClick={() => setPenType(item)}>
+                <div className="box">
+                    <div className={item}></div>
+                </div>
+            </li>
     ))
     return (
         <div className="left">
             <ul className="leftButton">
                 <li className="logo"></li>
                 {buttons}
+                <li className="save">
+                    <div className="box">
+                        <div className="save"></div>
+                    </div>
+                </li>
             </ul>
         </div>
     )

@@ -3,10 +3,10 @@ import Head from "./Head"
 
 // 颜色映射函数
 const getColorFromSigma = (sigma, minSigma, maxSigma) => {
-    const normalizedSigma = (sigma - minSigma) / (maxSigma - minSigma);
-    const hue = (1 - normalizedSigma) * 240; // 240 为蓝色，0 为红色
-    return `hsl(${hue}, 100%, 50%)`;
-};
+    const normalizedSigma = (sigma - minSigma) / (maxSigma - minSigma)
+    const hue = (1 - normalizedSigma) * 240 // 240 为蓝色，0 为红色
+    return `hsl(${hue}, 100%, 50%)`
+}
 
 const Draw = () => {
     const canvasRef = useRef(null) // 储存画布的引用
@@ -59,7 +59,7 @@ const Draw = () => {
             { points: [2, 1], sigma: -19.65204781477763 },
             { points: [0, 1], sigma: 0.0 }
         ]
-    };
+    }
     useEffect(() => {
         setDrawData({ ...visualizationData, isLoad: true })
     }, [])
@@ -206,53 +206,60 @@ const Draw = () => {
             })
 
         } else if (drawData.isLoad) {// 获取 sigma 的最小和最大值
-            const sigmas = drawData.lines.map(line => line.sigma);
-            const minSigma = Math.min(...sigmas);
-            const maxSigma = Math.max(...sigmas);
+            const sigmas = drawData.lines.map(line => line.sigma)
+            const minSigma = Math.min(...sigmas)
+            const maxSigma = Math.max(...sigmas)
 
             // 绘制线条（杆件）
             drawData.lines.forEach(line => {
-                const [startIdx, endIdx] = line.points;
-                const start = drawData.points[startIdx];
-                const end = drawData.points[endIdx];
+                const [startIdx, endIdx] = line.points
+                const start = drawData.points[startIdx]
+                const end = drawData.points[endIdx]
 
                 // 根据 sigma 值选择颜色
-                context.strokeStyle = getColorFromSigma(line.sigma, minSigma, maxSigma);
-                context.lineWidth = 2;
+                context.strokeStyle = getColorFromSigma(line.sigma, minSigma, maxSigma)
+                context.lineWidth = 3
 
                 // 绘制杆件
-                context.beginPath();
-                context.moveTo((start.x + start.dx * dispScale) * zoomScale, (start.y + start.dy * dispScale) * zoomScale);
-                context.lineTo((end.x + end.dx * dispScale) * zoomScale, (end.y + end.dy * dispScale) * zoomScale);
-                context.stroke();
-            });
+                context.beginPath()
+                context.moveTo((start.x + start.dx * dispScale) * zoomScale, (start.y + start.dy * dispScale) * zoomScale)
+                context.lineTo((end.x + end.dx * dispScale) * zoomScale, (end.y + end.dy * dispScale) * zoomScale)
+                context.stroke()
+            })
 
             // 绘制节点
             drawData.points.forEach(point => {
-                context.fillStyle = 'red';
-                context.beginPath();
-                context.arc((point.x + point.dx * dispScale) * zoomScale, (point.y + point.dy * dispScale) * zoomScale, 5, 0, Math.PI * 2);
-                context.fill();
-            });
+                context.fillStyle = 'red'
+                context.beginPath()
+                context.arc((point.x + point.dx * dispScale) * zoomScale, (point.y + point.dy * dispScale) * zoomScale, 5, 0, Math.PI * 2)
+                context.fill()
+            })
 
             const canvasHeight = canvas.height
             const canvasWidth = canvas.width
 
             // 绘制颜色条 (分成多个小段，确保每一小段的颜色和杆件颜色一致)
-            const barWidth = canvasWidth - 100;
-            const barHeight = 20;
-            const steps = 100;  // 颜色条的分段数
+            const barWidth = canvasWidth - 120
+            const barHeight = 20
+            const steps = 100  // 颜色条的分段数
             for (let i = 0; i < steps; i++) {
-                const sigma = minSigma + (i / steps) * (maxSigma - minSigma);
-                context.fillStyle = getColorFromSigma(sigma, minSigma, maxSigma);
-                context.fillRect(50 + (i / steps) * barWidth, canvasHeight - 40, barWidth / steps, barHeight);
+                const sigma = minSigma + (i / steps) * (maxSigma - minSigma)
+                context.fillStyle = getColorFromSigma(sigma, minSigma, maxSigma)
+                context.fillRect(60 - offset.x + (i / steps) * barWidth, 30 - offset.y, barWidth / steps, barHeight)
             }
 
+            context.save(); // 保存当前 canvas 状态
+            // 临时恢复正常的坐标系
+            context.scale(1, -1);
             // 绘制最小和最大应力值
-            context.fillStyle = 'black';
-            context.font = '14px Arial';
-            context.fillText(`Min Sigma: ${minSigma.toFixed(2)}`, 50, canvasHeight - 50);
-            context.fillText(`Max Sigma: ${maxSigma.toFixed(2)}`, canvasWidth - 150, canvasHeight - 50);
+            context.fillStyle = 'black'
+            context.font = '14px Arial'
+            const Max = `Max Sigma: ${maxSigma.toFixed(2)}`
+            const textMetrics = context.measureText(Max)
+            const textWidth = textMetrics.width;
+            context.fillText(`Min Sigma: ${minSigma.toFixed(2)}`, 60 - offset.x, -(30 - offset.y + barHeight + 10))
+            context.fillText(`Max Sigma: ${maxSigma.toFixed(2)}`, 60 - offset.x + barWidth - textWidth, -(30 - offset.y + barHeight + 10))
+            context.restore() // 恢复到反转坐标之前的状态
         }
 
     }, [drawData, resize, offset, zoomScale, resize, dispScale])
@@ -385,13 +392,15 @@ const Draw = () => {
     return (
         <div className="show">
             <Head />
-            <canvas
-                ref={canvasRef}
-                className="canvas"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            ></canvas>
+            <div className="canvas">
+                <canvas
+                    ref={canvasRef}
+                    className="canvas"
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                ></canvas>
+            </div>
         </div>
     )
 }
