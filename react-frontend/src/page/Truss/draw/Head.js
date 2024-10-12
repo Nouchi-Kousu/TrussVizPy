@@ -20,7 +20,7 @@ const Head = ({
     loadZoomSet
 }) => {
     const [penType] = useContext(penTypeContext)
-    const [selectedPoint] = selectedPointSet
+    const [selectedPoint, setSelectedPoint] = selectedPointSet
     const [points, setPoints] = pointsSet
     const [, setDelPoint] = delPointSet
     const [xValue, setXValue] = useState(0)
@@ -216,7 +216,9 @@ const Head = ({
             setMakingsSetting(true)
         } else if (penTy === "grab") {
             setOffset({ x: 50, y: 50 })
-            setZoomScale(10)
+            setZoomScale(100)
+        } else if (penTy === "point") {
+            setSelectedPoint(-1)
         }
     }
 

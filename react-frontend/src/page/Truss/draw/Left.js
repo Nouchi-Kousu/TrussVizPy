@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { penTypeContext } from './context'
+import { penTypeContext, saveImageContext } from './context'
 
 const Left = () => {
     const button = [
@@ -11,7 +11,7 @@ const Left = () => {
         "load",
     ]
     const [penType, setPenType] = useContext(penTypeContext)
-
+    const [isSave, setIsSave] = useContext(saveImageContext)
     const buttons = button.map((item, idx) => (
         penType === item ? <li className={`${item} clicked`} key={item} onClick={() => setPenType(item)}>
             <div className="box">
@@ -29,7 +29,7 @@ const Left = () => {
             <ul className="leftButton">
                 <li className="logo"></li>
                 {buttons}
-                <li className="save">
+                <li className="save" onClick={() => setIsSave(true)}>
                     <div className="box">
                         <div className="save"></div>
                     </div>

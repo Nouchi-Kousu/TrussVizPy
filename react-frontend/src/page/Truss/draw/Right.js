@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
-import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext } from "./context"
+import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext } from "./context"
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
@@ -31,6 +31,24 @@ const Right = () => {
     const [resize, setResize] = useState(false)
     const channel = new BroadcastChannel("truss")
     const [loadZoom, setLoadZoom] = useState(100)
+    const [isSave, setIsSave] = useContext(saveImageContext)
+
+    const saveImage = () => {
+        const canvas = canvasRef.current
+        const image = canvas.toDataURL('image/png')
+
+        const link = document.createElement('a')
+        link.href = image
+        link.download = 'canvas_image.png'
+        link.click()
+    }
+
+    useEffect(() => {
+        if (isSave) {
+            saveImage()
+            setIsSave(false)
+        }
+    }, [isSave])
 
     useEffect(() => {
         if (loads.length === 0) {
@@ -43,7 +61,6 @@ const Right = () => {
             console.log("drawData", drawData)
         }
     }, [lines, points])
-
 
     // 更改canvas大小
     const resizeCanvas = () => {

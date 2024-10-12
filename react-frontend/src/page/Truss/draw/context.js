@@ -14,3 +14,5 @@ export const lineMakingsIdxContext = createContext(null)
 
 export const lineMakingsContext = createContext(null)
 
+export const saveImageContext = createContext(null)
+
