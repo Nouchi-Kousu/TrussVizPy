@@ -11,7 +11,7 @@ const Right = () => {
         x: 0,
         y: 0,
     }) // 鼠标位置
-    const [zoomScale, setZoomScale] = useState(1)
+    const [zoomScale, setZoomScale] = useState(100)
     const [offset, setOffset] = useState({ x: 50, y: 50 }) // 原点平移量
     const [mouseDown, setMouseDown] = useState(-1) // 鼠标摁下
     const [isCtrlPressed, setIsCtrlPressed] = useState(false) // 是否按下ctrl键
@@ -30,6 +30,7 @@ const Right = () => {
     const [drawData, setDrawData] = useState({})
     const [resize, setResize] = useState(false)
     const channel = new BroadcastChannel("truss")
+    const [loadZoom, setLoadZoom] = useState(100)
 
     useEffect(() => {
         if (loads.length === 0) {
@@ -177,8 +178,8 @@ const Right = () => {
             }
             const startx = points[load.point].x * zoomScale
             const starty = points[load.point].y * zoomScale
-            const endx = load.Fx * zoomScale + startx
-            const endy = load.Fy * zoomScale + starty
+            const endx = load.Fx / loadZoom * zoomScale + startx
+            const endy = load.Fy / loadZoom * zoomScale + starty
             drawArrow(context, startx, starty, endx, endy)
             context.shadowColor = 'transparent' // 关闭阴影
             context.shadowBlur = 0
@@ -401,6 +402,8 @@ const Right = () => {
                     setIsDrawLoad(false)
                 } else if (clickedLoadIndex !== -1) {
                     setSelectedLoad(clickedLoadIndex)
+                } else {
+                    setSelectedLoad(-1)
                 }
             }
         } else if (event.button === 1) {
@@ -460,8 +463,8 @@ const Right = () => {
                     idx === selectedLoad
                         ? {
                             ...load,
-                            Fx: x / zoomScale - points[load.point].x,
-                            Fy: y / zoomScale - points[load.point].y
+                            Fx: (x / zoomScale - points[load.point].x) * loadZoom,
+                            Fy: (y / zoomScale - points[load.point].y) * loadZoom
                         }
                         : load
                 )
@@ -566,6 +569,7 @@ const Right = () => {
                 offsetSet={[offset, setOffset]}
                 loadsSet={[loads, setLoads]}
                 selectedLoadSet={[selectedLoad, setSelectedLoad]}
+                loadZoomSet={[loadZoom, setLoadZoom]}
             />
             <div className="canvas">
                 <canvas

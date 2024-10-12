@@ -29,6 +29,7 @@ const Draw = () => {
         y: 0,
     }) // 鼠标位置
     const [dispScale, setDispScale] = useState(1000)
+    const [loadZoom, setLoadZoom] = useState(100)
 
     const visualizationData = {
         points: [

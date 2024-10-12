@@ -16,7 +16,8 @@ const Head = ({
     zoomScaleSet,
     offsetSet,
     loadsSet,
-    selectedLoadSet
+    selectedLoadSet,
+    loadZoomSet
 }) => {
     const [penType] = useContext(penTypeContext)
     const [selectedPoint] = selectedPointSet
@@ -35,6 +36,7 @@ const Head = ({
     const [offset, setOffset] = offsetSet
     const [loads, setLoads] = loadsSet
     const [selectedLoad, setSelectedLoad] = selectedLoadSet
+    const [loadZoom, setLoadZoom] = loadZoomSet
 
     useEffect(() => {
         if (selectedPoint !== -1) {
@@ -195,6 +197,16 @@ const Head = ({
                     }}>
                     删除
                 </span>
+            </>
+        } else {
+            headTable = <>
+                <span>载荷放大系数:</span>
+                <input
+                    type="number"
+                    className="load"
+                    value={loadZoom}
+                    onChange={(e) => setLoadZoom(Number(e.target.value))}
+                ></input>
             </>
         }
     }
