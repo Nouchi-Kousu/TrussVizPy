@@ -6,14 +6,14 @@ from scipy.spatial.distance import euclidean
 def Input_to_Computational_Data(input_data: Input_Data):
     points = input_data['points'].copy()
 
-    def Line_Input_to_Line(line_input: Line_input) -> Line:
-        start = points[line_input['points'][0]]
-        end = points[line_input['points'][1]]
+    def Line_Input_to_Line(line: Line_input) -> Line:
+        start = points[line['points'][0]]
+        end = points[line['points'][1]]
         theta = math.atan2(end['y'] - start['y'], end['x'] - start['x'])
         L = euclidean([start['x'], start['y']], [end['x'], end['y']])
-        k = line_input['A'] * line_input['E'] / L
-        m = line_input['rho'] * L * line_input['A']
-        return Line(points=line_input['points'], L=L, E=line_input['E'], k=k, theta=theta, m=m)
+        k = line['A'] * line['E'] / L
+        m = line['rho'] * L * line['A']
+        return Line(points=line['points'], L=L, E=line['E'], k=k, A=line['A'], theta=theta, m=m)
 
     lines = [Line_Input_to_Line(line_input)
              for line_input in input_data['lines']]
@@ -31,18 +31,18 @@ def Fronted_to_Computational_Data(frontend_input_data: Frontend_Input_Data):
     points = frontend_input_data['points'].copy()
     makings = frontend_input_data['makings'].copy()
 
-    def Line_to_Line_input(line_input: Frontend_Line) -> Line:
-        start = points[line_input['points'][0]]
-        end = points[line_input['points'][1]]
+    def Line_to_Line_input(line: Frontend_Line) -> Line:
+        start = points[line['points'][0]]
+        end = points[line['points'][1]]
         theta = math.atan2(end['y'] - start['y'], end['x'] - start['x'])
-        making = makings[line_input['makingsIdx']]
+        making = makings[line['makingsIdx']]
         L = euclidean([start['x'], start['y']], [end['x'], end['y']])
         k = making['A'] * making['E'] / L
         m = making['rho'] * L * making['A']
-        return Line(points=line_input['points'], L=L, E=making['E'], k=k, theta=theta, m=m)
+        return Line(points=line['points'], L=L, E=making['E'], k=k, A=making['A'], theta=theta, m=m)
 
-    lines = [Line_to_Line_input(line_input)
-             for line_input in frontend_input_data['lines']]
+    lines = [Line_to_Line_input(line)
+             for line in frontend_input_data['lines']]
     constraint_nums = 0
     for point in points:
         if point['Constraint_Type'] == 2:
@@ -64,14 +64,15 @@ def Calculation_Result_to_Visualization(calculation_result: Calculation_Result_D
         end = points[line['points'][1]]
         sigma = (euclidean([start['x'] + start['dx'], start['y'] + start['dy']],
                  [end['x'] + end['dx'], end['y'] + end['dy']]) - line['L']) / line['L'] * line['E']
-        return Line_Force(points=(line['points'][0], line['points'][1]), sigma=sigma)
+        return Line_Force(points=[line['points'][0], line['points'][1]], sigma=sigma)
 
     line_forces = [Line_to_Line_Force(line)
                    for line in calculation_result['lines']]
 
     visualization_data = Visualization_Data(
         points=calculation_result['points'].copy(),
-        lines=line_forces
+        lines=line_forces,
+        loads=calculation_result['loads']
     )
 
     return visualization_data
@@ -102,3 +103,50 @@ class Bidirectional_Map():
 
 if __name__ == '__main__':
     print('test')
+
+
+def txt_to_frontend_input_data(file_path: str) -> Frontend_Input_Data:
+    data: Frontend_Input_Data = {
+        'points': [],
+        'lines': [],
+        'loads': [],
+        'makings': []
+    }
+
+    with open(file_path, 'r') as f:
+        for line in f:
+            tokens = line.strip().split(',')
+            if tokens[0] == 'P':
+                # 解析点数据
+                assert len(tokens) == 5
+                data['points'].append({
+                    'x': float(tokens[1]),
+                    'y': float(tokens[2]),
+                    'Constraint_Type': int(tokens[3]),
+                    'theta': float(tokens[4])
+                })
+            elif tokens[0] == 'L':
+                # 解析杆件数据
+                assert len(tokens) == 4
+                data['lines'].append({
+                    'points': [int(tokens[1]), int(tokens[2])],
+                    'makingsIdx': int(tokens[3])
+                })
+            elif tokens[0] == 'M':
+                # 解析材料数据
+                assert len(tokens) == 4
+                data['makings'].append({
+                    'E': float(tokens[1]),
+                    'A': float(tokens[2]),
+                    'rho': float(tokens[3])
+                })
+            elif tokens[0] == 'F':
+                # 解析载荷数据
+                assert len(tokens) == 4
+                data['loads'].append({
+                    'point': int(tokens[1]),
+                    'Fx': float(tokens[2]),
+                    'Fy': float(tokens[3])
+                })
+
+    return data

@@ -21,29 +21,30 @@ class Point_Output(TypedDict):
 
 class Line(TypedDict):
     # 杆件数据结构
-    points: Tuple[int, int]
+    points: List[int]
     L: float
     k: float
     E: float
     m: float
+    A: float
     theta: float
 
 
 class Line_input(TypedDict):
-    points: Tuple[int, int]
+    points: List[int]
     E: float
     A: float
     rho: float
 
 class Frontend_Line(TypedDict):
     # 前端传入的杆件数据结构
-    points: Tuple[int, int]
+    points: List[int]
     makingsIdx: int
 
 
 class Line_Force(TypedDict):
     # 应力杆件数据结构
-    points: Tuple[int, int]
+    points: List[int]
     sigma: float
 
 
@@ -96,13 +97,14 @@ class Visualization_Data(TypedDict):
     # 后端将计算结果处理后返回给前端，用于可视化展示的结果数据
     points: List[Point_Output]
     lines: List[Line_Force]
+    loads: List[Load]
 
 
 def point_init(x: float, y: float, Constraint_Type: Literal[0, 1, 2] = 0, theta: float = 0):
     return Point(x=x, y=y, Constraint_Type=Constraint_Type, theta=theta)
 
 
-def line_init(points: Tuple[int, int], E: float, A: float, rho: float = 0):
+def line_init(points: List[int], E: float, A: float, rho: float = 0):
     return Line_input(points=points, E=E, A=A, rho=rho)
 
 
@@ -116,5 +118,5 @@ def point_output(point: Point, dx: float = 0, dy: float = 0):
 def making_init(E: float, A: float, rho: float):
     return Making(E=E, A=A, rho=rho)
 
-def frontend_line_init(points: Tuple[int, int], makingsIdx: int):
+def frontend_line_init(points: List[int], makingsIdx: int):
     return Frontend_Line(points=points, makingsIdx=makingsIdx)

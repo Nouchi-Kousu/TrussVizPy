@@ -18,14 +18,16 @@ def get_global_stiffness_matrix_and_gravity_load(input_data: Computational_Data,
             if input_data['points'][point_idx]['Constraint_Type'] == 0:
                 gsm_idx = point_map.get_idx(point_idx) * 2
                 esm = Get_Element_Stiffness_Matrix(line['k'], line['theta'])
-                global_stiffness_matrix[gsm_idx:gsm_idx + 2, gsm_idx:gsm_idx+2] += esm
-                load_matrix[gsm_idx+1] += line['m'] * g
+                global_stiffness_matrix[gsm_idx:gsm_idx +
+                                        2, gsm_idx:gsm_idx+2] += esm
+                load_matrix[gsm_idx+1] -= line['m'] * g
 
             elif input_data['points'][point_idx]['Constraint_Type'] == 1:
                 esm = Get_Element_Stiffness_Matrix(
                     9e100, input_data['points'][point_idx]['theta'] + pi / 2)
                 gsm_idx = point_map.get_idx(point_idx) * 2
-                global_stiffness_matrix[gsm_idx:gsm_idx + 2, gsm_idx:gsm_idx+2] += esm
+                global_stiffness_matrix[gsm_idx:gsm_idx +
+                                        2, gsm_idx:gsm_idx+2] += esm
 
         # 处理非对角元
         if input_data['points'][line['points'][0]]['Constraint_Type'] != 2 and input_data['points'][line['points'][1]]['Constraint_Type'] != 2:

@@ -59,7 +59,8 @@ const Draw = () => {
             { points: [0, 2], sigma: -19.65204781477763 },
             { points: [2, 1], sigma: -19.65204781477763 },
             { points: [0, 1], sigma: 0.0 }
-        ]
+        ],
+        'loads': [{ 'point': 3, 'Fx': 90.71, 'Fy': -70.71 }]
     }
     useEffect(() => {
         setDrawData({ ...visualizationData, isLoad: true })
@@ -73,6 +74,32 @@ const Draw = () => {
             canvas.width = canvas.clientWidth
             canvas.height = canvas.clientHeight
         }
+    }
+
+    const drawArrow = (ctx, fromX, fromY, toX, toY, arrowWidth = 10, color = 'black') => {
+        ctx.strokeStyle = color
+        ctx.fillStyle = color
+        ctx.lineWidth = 2
+
+        const angle = Math.atan2(toY - fromY, toX - fromX)
+
+        ctx.beginPath()
+        ctx.moveTo(fromX, fromY)
+        ctx.lineTo(toX, toY)
+        ctx.stroke()
+
+        const headLength = arrowWidth
+        const arrowX1 = toX - headLength * Math.cos(angle - Math.PI / 6)
+        const arrowY1 = toY - headLength * Math.sin(angle - Math.PI / 6)
+        const arrowX2 = toX - headLength * Math.cos(angle + Math.PI / 6)
+        const arrowY2 = toY - headLength * Math.sin(angle + Math.PI / 6)
+
+        ctx.beginPath()
+        ctx.moveTo(toX, toY)
+        ctx.lineTo(arrowX1, arrowY1)
+        ctx.lineTo(arrowX2, arrowY2)
+        ctx.closePath()
+        ctx.fill()
     }
 
     useEffect(() => {
@@ -210,6 +237,18 @@ const Draw = () => {
             const sigmas = drawData.lines.map(line => line.sigma)
             const minSigma = Math.min(...sigmas)
             const maxSigma = Math.max(...sigmas)
+            
+            drawData.loads.forEach((load, idx) => {
+                const startx = drawData.points[load.point].x * zoomScale
+                const starty = drawData.points[load.point].y * zoomScale
+                const endx = load.Fx / loadZoom * zoomScale + startx
+                const endy = load.Fy / loadZoom * zoomScale + starty
+                drawArrow(context, startx, starty, endx, endy)
+                context.shadowColor = 'transparent' // 关闭阴影
+                context.shadowBlur = 0
+                context.shadowOffsetX = 0
+                context.shadowOffsetY = 0
+            })
 
             // 绘制线条（杆件）
             drawData.lines.forEach(line => {
