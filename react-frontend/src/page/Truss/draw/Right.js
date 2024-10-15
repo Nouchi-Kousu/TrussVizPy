@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
 import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext } from "./context"
+import { encode } from '@msgpack/msgpack'
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
@@ -32,6 +33,15 @@ const Right = () => {
     const channel = new BroadcastChannel("truss")
     const [loadZoom, setLoadZoom] = useState(100)
     const [isSave, setIsSave] = useContext(saveImageContext)
+
+    useEffect(()=>{
+        if (loads.length === 0) return
+        const fetchData = async () => {
+            try {
+                const response = await 
+            }
+        }
+    }, [points, loads, lines])
 
     const saveImage = () => {
         const canvas = canvasRef.current

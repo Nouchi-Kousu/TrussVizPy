@@ -19,8 +19,13 @@ def my_protobuf():
     data = msgpack.unpackb(packed_data)
     print(data)
     data = tp.prepare_frontend_input(data)
-    resp = tp.main(data)
-    packed_response = msgpack.packb(resp)
+    try:
+        resp = tp.main(data)
+        packed_response = msgpack.packb(resp)
+    except Exception as e:
+        print(e)
+        packed_response = msgpack.packb({"error": str(e)})
+        return packed_response, 400, {'Content-Type': 'application/x-msgpack'}
 
     # 返回 MessagePack 编码的二进制数据
     return packed_response, 200, {'Content-Type': 'application/x-msgpack'}
