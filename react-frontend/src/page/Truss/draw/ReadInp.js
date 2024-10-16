@@ -9,14 +9,14 @@ function frontendInputDataToTxt(data) {
         result += `P,${point.x},${point.y},${point.Constraint_Type},${point.theta}\n`
     })
 
-    data.lines.forEach(line => {
-        result += `L,${line.points[0]},${line.points[1]},${line.makingsIdx}\n`
-    })
-
     data.makings.forEach(making => {
         const name = making.name || ''
         const color = making.color || ''
         result += `M,${name},${making.E},${making.A},${making.rho},${color}\n`
+    })
+
+    data.lines.forEach(line => {
+        result += `L,${line.points[0]},${line.points[1]},${line.makingsIdx}\n`
     })
 
     return result
@@ -103,16 +103,18 @@ const ReadInp = ({ isReadInpSet }) => {
 
     // 下载当前 frontendData 为 .txt 文件
     const downloadTxtFile = () => {
-        if (!frontendData) {
-            alert('没有数据可下载')
-            return
-        }
+        setFrontendData({
+            points: [...points],
+            lines: [...lines],
+            loads: [...loads],
+            makings: [...makings]
+        })
         const txt = frontendInputDataToTxt(frontendData)
         const blob = new Blob([txt], { type: 'text/plaincharset=utf-8' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'data.txt'
+        a.download = 'data.inp'
         a.click()
         URL.revokeObjectURL(url)
     }
@@ -120,13 +122,14 @@ const ReadInp = ({ isReadInpSet }) => {
     return (
         <div className="modal-overlay" onClick={() => setIsReadInp(false)}>
             <div className="set" onClick={(e) => e.stopPropagation()} >
-                <h2>Truss Data Manager</h2>
-                <input type="file" accept=".txt" onChange={onFileUpload} />
-
-                {/* 显示解析后的数据 */}
-
-                {/* 下载按钮 */}
-                <button onClick={downloadTxtFile}>下载为 .txt 文件</button>
+                <h2>存取数据</h2>
+                <input type="file" accept=".txt,.inp" onChange={onFileUpload} />
+                <button onClick={downloadTxtFile}>储存为 .inp 文件</button>
+                <h4>浏览器本地存储</h4>
+                结构名称：<input type="text" placeholder="name" onChange={()=>{}} />&nbsp;
+                时间：<input type="datetime-local" placeholder="time" value={new Date().toISOString().slice(0, 16)} onChange={()=>{}} />&nbsp;
+                备注：<input type="number" placeholder="note" onChange={()=>{}} />&nbsp;
+                <span>存储</span>
             </div>
         </div >
     )
