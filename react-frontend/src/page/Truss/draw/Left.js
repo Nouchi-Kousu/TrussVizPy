@@ -34,6 +34,11 @@ const Left = () => {
                         <div className="save"></div>
                     </div>
                 </li>
+                <li className="clear" onClick={() => setIsSave(true)}>
+                    <div className="box">
+                        <div className="clear"></div>
+                    </div>
+                </li>
             </ul>
         </div>
     )

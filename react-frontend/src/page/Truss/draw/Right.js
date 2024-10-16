@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
 import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext } from "./context"
-import { encode } from '@msgpack/msgpack'
+import * as msgpack from '@msgpack/msgpack'
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
@@ -33,14 +33,36 @@ const Right = () => {
     const channel = new BroadcastChannel("truss")
     const [loadZoom, setLoadZoom] = useState(100)
     const [isSave, setIsSave] = useContext(saveImageContext)
+    const [loading, setLoading] = useState(false)
 
-    useEffect(()=>{
+    useEffect(() => {
         if (loads.length === 0) return
         const fetchData = async () => {
-            try {
-                const response = await 
+            setLoading(true)
+            const data = {
+                lines: lines,
+                points: points,
+                loads: loads,
+                makings: lineMakings
             }
+            const packedData = msgpack.encode(data)
+            const packedDataBase64 = btoa(String.fromCharCode(...new Uint8Array(packedData)))
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/get?data=${encodeURIComponent(packedDataBase64)}`)
+                if (response.ok) {
+                    const arrayBuffer = await response.arrayBuffer()
+                    const unpackedData = msgpack.decode(new Uint8Array(arrayBuffer))
+                    setDrawData({ ...unpackedData.received, isLoad: true })
+                    console.log(drawData)
+                } else {
+                    console.error('Request failed:', response.status)
+                }
+            } catch (error) {
+                console.error('Error:', error)
+            }
+            setLoading(false)
         }
+        loading || fetchData()
     }, [points, loads, lines])
 
     const saveImage = () => {
@@ -67,10 +89,12 @@ const Right = () => {
                 lines: lines,
                 points: points,
             })
-            channel.postMessage(drawData)
-            console.log("drawData", drawData)
         }
     }, [lines, points])
+
+    useEffect(() => {
+        channel.postMessage(drawData)
+    }, [drawData])
 
     // 更改canvas大小
     const resizeCanvas = () => {
@@ -115,8 +139,8 @@ const Right = () => {
     const getSelectedPoint = (event) => {
         const { x, y } = getMousePosition(event)
         const clickedPointIndex = points.findIndex(
-            (circle) =>
-                Math.hypot(circle.x * zoomScale - x, circle.y * zoomScale - y) <
+            (point) =>
+                Math.hypot(point.x * zoomScale - x, point.y * zoomScale - y) <
                 10
         )
         return clickedPointIndex
@@ -235,6 +259,7 @@ const Right = () => {
                 )
             } else {
                 context.lineTo(end.x * zoomScale, end.y * zoomScale)
+                console.log(end.x, end.y)
             }
             context.strokeStyle = lineMakings[line.makingsIdx].color
             context.lineWidth = idx === selectedLine ? 4 : 2
@@ -342,7 +367,7 @@ const Right = () => {
                     setSelectedPoint(points.length)
                     setPoints([
                         ...points,
-                        { x: x / zoomScale, y: y / zoomScale },
+                        { x: x / zoomScale, y: y / zoomScale, Constraint_Type: 0, theta: 0 },
                     ])
                 }
             } else if (penType === "line") {
@@ -377,7 +402,7 @@ const Right = () => {
                     setSelectedLine(lines.length)
                     setLines([
                         ...lines,
-                        { points: [clickedPointIndex, { x, y }], makingsIdx: lineMakingsIdx },
+                        { points: [clickedPointIndex, { x: x / zoomScale, y: y / zoomScale }], makingsIdx: lineMakingsIdx },
                     ])
                     setIsDrawLine(true)
                 } else if (clickedPointIndex === -1 && !isDrawLine) {

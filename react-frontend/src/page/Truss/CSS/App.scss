@@ -13,13 +13,13 @@ body {
 
     .drawWin {
         height: 100%;
-        width: 60%;
+        width: 50%;
         background-color: brown;
     }
 
     .showWin {
         height: 100%;
-        width: 40%;
+        width: 50%;
         background-color: chocolate;
     }
 }
@@ -58,10 +58,7 @@ body {
         height: 40px;
         background-color: #e5e5e5;
         display: flex;
-        user-select: none; /* 禁止文字选择 */
-        -webkit-user-select: none; /* 适用于Safari */
-        -moz-user-select: none; /* 适用于旧版本的Firefox */
-        -ms-user-select: none; /* 适用于IE 10+ */
+        user-select: none;
         font-size: 15px;
         .headdiv {
             padding: calc((40px - 20px) / 2);
@@ -100,6 +97,10 @@ body {
             }
             &.save {
                 mask: url("../assets/save.svg") no-repeat center; /* 指定掩膜图像 */
+                mask-size: contain; /* 保持掩膜比例 */
+            }
+            &.clear {
+                mask: url("../assets/clear.svg") no-repeat center; /* 指定掩膜图像 */
                 mask-size: contain; /* 保持掩膜比例 */
             }
         }
@@ -201,7 +202,7 @@ body {
         div {
             width: 30px;
             height: 30px;
-            background-color: #808080;
+            background-color: #909090;
             &.grab {
                 mask: url("../assets/grab.svg") no-repeat center; /* 指定掩膜图像 */
                 mask-size: contain; /* 保持掩膜比例 */
@@ -230,6 +231,10 @@ body {
                 mask: url("../assets/save.svg") no-repeat center; /* 指定掩膜图像 */
                 mask-size: contain; /* 保持掩膜比例 */
             }
+            &.clear {
+                mask: url("../assets/clear.svg") no-repeat center; /* 指定掩膜图像 */
+                mask-size: contain; /* 保持掩膜比例 */
+            }
         }
     }
 }
@@ -252,6 +257,66 @@ body {
         height: 40px;
         background-color: #e5e5e5;
         display: flex;
+        user-select: none;
+        li {
+            list-style-type: none;
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            background-color: #909090;
+            margin-left: 10px;
+            &.grab {
+                mask: url("../assets/grab.svg") no-repeat center; /* 指定掩膜图像 */
+                mask-size: contain; /* 保持掩膜比例 */
+            }
+            &.save {
+                mask: url("../assets/save.svg") no-repeat center; /* 指定掩膜图像 */
+                mask-size: contain; /* 保持掩膜比例 */
+            }
+            &.choose {
+                mask: url("../assets/choose.svg") no-repeat center;
+                mask-size: contain;
+            }
+            &.set {
+                mask: url("../assets/set.svg") no-repeat center;
+                mask-size: contain;
+            }
+            &.chicked {
+                background-color: #000000;
+            }
+        }
+        li:hover {
+            background-color: #000000;
+        }
+        input {
+            border: 0px;
+            outline: none;
+            background-color: #eeeeee;
+            font-size: 13px;
+            padding: 0;
+            height: 20px;
+            width: 100px;
+            border-radius: 3px;
+            padding-left: 5px;
+            padding-right: 5px;
+            vertical-align: top;
+            &:focus {
+                background-color: #f9f9f9;
+            }
+            &.isAbs {
+                width: 15px;
+                height: 15px;
+            }
+        }
+        span {
+            vertical-align: top;
+            padding-left: 10px;
+            padding-right: 5px;
+            font-size: 15px;
+        }
+        .headdiv {
+            padding: calc((40px - 20px) / 2);
+        }
     }
 }
 
@@ -288,10 +353,7 @@ body {
         }
         .button {
             height: 15px;
-            user-select: none; /* 禁止文字选择 */
-            -webkit-user-select: none; /* 适用于Safari */
-            -moz-user-select: none; /* 适用于旧版本的Firefox */
-            -ms-user-select: none; /* 适用于IE 10+ */
+            user-select: none;
         }
         .button:hover {
             color: #0000008a;

@@ -178,7 +178,7 @@ const Head = ({
                     className="load"
                     value={loads[selectedLoad].Fx}
                     onChange={(e) => setLoads([...loads.map((load, idx) =>
-                        idx === selectedLoad ? { ...load, Fx: e.target.value } : load
+                        idx === selectedLoad ? { ...load, Fx: Number(e.target.value) } : load
                     )])}
                 ></input>
                 <span>Fy:</span>
@@ -187,7 +187,7 @@ const Head = ({
                     className="load"
                     value={loads[selectedLoad].Fy}
                     onChange={(e) => setLoads([...loads.map((load, idx) =>
-                        idx === selectedLoad ? { ...load, Fy: e.target.value } : load
+                        idx === selectedLoad ? { ...load, Fy: Number(e.target.value) } : load
                     )])}
                 ></input>
                 <span className="button"

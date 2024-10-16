@@ -8,9 +8,9 @@ const getColorFromSigma = (sigma, minSigma, maxSigma) => {
     return `hsl(${hue}, 100%, 50%)`
 }
 
-const Draw = () => {
+const Show = () => {
     const canvasRef = useRef(null) // 储存画布的引用
-    const [zoomScale, setZoomScale] = useState(10)
+    const [zoomScale, setZoomScale] = useState(100)
     const [offset, setOffset] = useState({ x: 50, y: 50 }) // 原点平移量
     const [test, setTast] = useState(null)
     const [drawData, setDrawData] = useState({
@@ -30,41 +30,29 @@ const Draw = () => {
     }) // 鼠标位置
     const [dispScale, setDispScale] = useState(1000)
     const [loadZoom, setLoadZoom] = useState(100)
+    const [isSave, setIsSave] = useState(false)
+    const [penType, setPenType] = useState(null)
+    const [selectedLine, setSelectedLine] = useState(-1)
+    const [selectedPoint, setSelectedPoint] = useState(-1)
+    const [selected, setSelected] = useState({})
+    const [isAbs, setIsAbs] = useState(false)
 
-    const visualizationData = {
-        points: [
-            { x: 0, y: 0, dx: 0, dy: 0, Constraint_Type: 2, theta: 0 },
-            { x: 1, y: 0, dx: 0, dy: 0, Constraint_Type: 2, theta: 0 },
-            {
-                x: 0.5,
-                y: 0.28867513459481287,
-                dx: -1.1295178036761014e-22,
-                dy: -4.727576990260983e-06,
-                Constraint_Type: 0,
-                theta: 0
-            },
-            {
-                x: 0.5,
-                y: 0.8660254037844386,
-                dx: 3.77958333333333e-05,
-                dy: -7.091365485391475e-06,
-                Constraint_Type: 0,
-                theta: 0
-            }
-        ],
-        lines: [
-            { points: [0, 3], sigma: 61.23490579721392 },
-            { points: [2, 3], sigma: -19.64188308293758 },
-            { points: [1, 3], sigma: -120.18620826612649 },
-            { points: [0, 2], sigma: -19.65204781477763 },
-            { points: [2, 1], sigma: -19.65204781477763 },
-            { points: [0, 1], sigma: 0.0 }
-        ],
-        'loads': [{ 'point': 3, 'Fx': 90.71, 'Fy': -70.71 }]
+    const saveImage = () => {
+        const canvas = canvasRef.current
+        const image = canvas.toDataURL('image/png')
+
+        const link = document.createElement('a')
+        link.href = image
+        link.download = 'canvas_image.png'
+        link.click()
     }
+
     useEffect(() => {
-        setDrawData({ ...visualizationData, isLoad: true })
-    }, [])
+        if (isSave) {
+            saveImage()
+            setIsSave(false)
+        }
+    }, [isSave])
 
     // 更改canvas大小
     const resizeCanvas = () => {
@@ -74,6 +62,43 @@ const Draw = () => {
             canvas.width = canvas.clientWidth
             canvas.height = canvas.clientHeight
         }
+    }
+
+    useEffect(() => {
+        if (selectedPoint !== -1) {
+            setSelected({ type: "point", ...drawData.points[selectedPoint] })
+        } else if (selectedLine !== -1) {
+            setSelected({ type: "line", ...drawData.lines[selectedLine] })
+        } else {
+            setSelected({ type: "none" })
+        }
+    }, [selectedLine, selectedPoint, drawData])
+
+    const getSelectedLine = (event) => {
+        const { x, y } = getMousePosition(event)
+        const clickedLineIndex = drawData.lines.findIndex((line) => {
+            const startIdx = line.points[0]
+            const endIdx = line.points[1]
+            const startx = (drawData.points[startIdx].x + drawData.points[startIdx].dx * dispScale) * zoomScale
+            const starty = (drawData.points[startIdx].y + drawData.points[startIdx].dy * dispScale) * zoomScale
+            const endx = (drawData.points[endIdx].x + drawData.points[endIdx].dx * dispScale) * zoomScale
+            const endy = (drawData.points[endIdx].y + drawData.points[endIdx].dy * dispScale) * zoomScale
+            const l1 = Math.hypot(startx - x, starty - y)
+            const l2 = Math.hypot(endx - x, endy - y)
+            const L = Math.hypot(startx - endx, starty - endy)
+            return l1 + l2 <= L + 1
+        })
+        return clickedLineIndex
+    }
+
+    const getSelectedPoint = (event) => {
+        const { x, y } = getMousePosition(event)
+        const clickedPointIndex = drawData.points.findIndex(
+            (point) =>
+                Math.hypot((point.x + point.dx * dispScale) * zoomScale - x, (point.y + point.dy * dispScale) * zoomScale - y) <
+                10
+        )
+        return clickedPointIndex
     }
 
     const drawArrow = (ctx, fromX, fromY, toX, toY, arrowWidth = 10, color = 'black') => {
@@ -233,31 +258,41 @@ const Draw = () => {
                 }
             })
 
-        } else if (drawData.isLoad) {// 获取 sigma 的最小和最大值
-            const sigmas = drawData.lines.map(line => line.sigma)
+        } else if (drawData.isLoad) {
+            let sigmas
+            if (isAbs) {
+                sigmas = drawData.lines.map(line => Math.abs(line.sigma))
+            } else {
+                sigmas = drawData.lines.map(line => line.sigma)
+            }
             const minSigma = Math.min(...sigmas)
             const maxSigma = Math.max(...sigmas)
-            
+
             drawData.loads.forEach((load, idx) => {
-                const startx = drawData.points[load.point].x * zoomScale
-                const starty = drawData.points[load.point].y * zoomScale
+                const startx = (drawData.points[load.point].x + drawData.points[load.point].dx * dispScale) * zoomScale
+                const starty = (drawData.points[load.point].y + drawData.points[load.point].dy * dispScale) * zoomScale
                 const endx = load.Fx / loadZoom * zoomScale + startx
                 const endy = load.Fy / loadZoom * zoomScale + starty
                 drawArrow(context, startx, starty, endx, endy)
-                context.shadowColor = 'transparent' // 关闭阴影
-                context.shadowBlur = 0
-                context.shadowOffsetX = 0
-                context.shadowOffsetY = 0
             })
 
             // 绘制线条（杆件）
-            drawData.lines.forEach(line => {
+            drawData.lines.forEach((line, idx) => {
                 const [startIdx, endIdx] = line.points
                 const start = drawData.points[startIdx]
                 const end = drawData.points[endIdx]
-
+                if (idx === selectedLine) {
+                    context.shadowColor = 'rgba(0, 0, 0, 0.5)'
+                    context.shadowBlur = 10
+                    context.shadowOffsetX = 5
+                    context.shadowOffsetY = 5
+                }
                 // 根据 sigma 值选择颜色
-                context.strokeStyle = getColorFromSigma(line.sigma, minSigma, maxSigma)
+                if (isAbs) {
+                    context.strokeStyle = getColorFromSigma(Math.abs(line.sigma), minSigma, maxSigma)
+                } else {
+                    context.strokeStyle = getColorFromSigma(line.sigma, minSigma, maxSigma)
+                }
                 context.lineWidth = 3
 
                 // 绘制杆件
@@ -265,11 +300,15 @@ const Draw = () => {
                 context.moveTo((start.x + start.dx * dispScale) * zoomScale, (start.y + start.dy * dispScale) * zoomScale)
                 context.lineTo((end.x + end.dx * dispScale) * zoomScale, (end.y + end.dy * dispScale) * zoomScale)
                 context.stroke()
+                context.shadowColor = 'transparent' // 关闭阴影
+                context.shadowBlur = 0
+                context.shadowOffsetX = 0
+                context.shadowOffsetY = 0
             })
 
             // 绘制节点
-            drawData.points.forEach(point => {
-                context.fillStyle = 'red'
+            drawData.points.forEach((point, idx) => {
+                context.fillStyle = idx === selectedPoint ? "red" : "blue"
                 context.beginPath()
                 context.arc((point.x + point.dx * dispScale) * zoomScale, (point.y + point.dy * dispScale) * zoomScale, 5, 0, Math.PI * 2)
                 context.fill()
@@ -302,7 +341,7 @@ const Draw = () => {
             context.restore() // 恢复到反转坐标之前的状态
         }
 
-    }, [drawData, resize, offset, zoomScale, resize, dispScale])
+    }, [drawData, resize, offset, zoomScale, resize, dispScale, loadZoom, selectedLine, isAbs, selectedPoint])
 
 
     // 鼠标摁下
@@ -313,6 +352,12 @@ const Draw = () => {
             const { x, y } = getAbsoluteMousePosition(event)
             setAbsoluteMousePosition({ x, y })
             setMouseDown(0)
+            if (penType === "choose" && drawData.isLoad) {
+                const clickedLineIndex = getSelectedLine(event)
+                setSelectedLine(clickedLineIndex)
+                const clickedPointIndex = getSelectedPoint(event)
+                setSelectedPoint(clickedPointIndex)
+            }
         } else if (event.button === 1) {
             // 中键逻辑
             const { x, y } = getAbsoluteMousePosition(event)
@@ -335,7 +380,7 @@ const Draw = () => {
     const handleMouseMove = (event) => {
         if (mouseDown === 0) {
             // 左键逻辑
-            if (isSpacePressed) {
+            if (isSpacePressed || penType === "grab") {
                 offsetDraw(event)
             }
         } else if (mouseDown === 1) {
@@ -431,7 +476,16 @@ const Draw = () => {
 
     return (
         <div className="show">
-            <Head />
+            <Head
+                zoomScaleSet={[zoomScale, setZoomScale]}
+                offsetSet={[offset, setOffset]}
+                saved={setIsSave}
+                penTypeSet={[penType, setPenType]}
+                selected={selected}
+                dispScaleSet={[dispScale, setDispScale]}
+                loadZoomSet={[loadZoom, setLoadZoom]}
+                isAbsSet={[isAbs, setIsAbs]}
+            />
             <div className="canvas">
                 <canvas
                     ref={canvasRef}
@@ -445,4 +499,4 @@ const Draw = () => {
     )
 }
 
-export default Draw
+export default Show
