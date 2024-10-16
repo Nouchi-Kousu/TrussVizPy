@@ -1,11 +1,5 @@
 import base64
-import math
-from time import sleep, time
-from matplotlib import pyplot as plt
 import msgpack
-import scipy
-import scipy.linalg
-from TrussPy import prepare_input, Point, Line, Load, Input_Data, Bidirectional_Map, Frontend_Line, Frontend_Input_Data, Visualization_Data
 from rich import print
 import TrussPy as tp
 from flask import Flask, request
@@ -25,9 +19,9 @@ def my_protobuf():
 
     packed_data = base64.b64decode(packed_data_base64)
     data = msgpack.unpackb(packed_data)
-    data = tp.prepare_frontend_input(data)
 
     try:
+        data = tp.prepare_frontend_input(data)
         resp = tp.main(data)
     except Exception as e:
         print(e)
@@ -41,4 +35,4 @@ def my_protobuf():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=1224)

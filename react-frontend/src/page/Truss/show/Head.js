@@ -21,13 +21,13 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
                     <span>dx:</span>
                     <input
                         type="number"
-                        value={selected.dx.toExponential(4)}
+                        value={selected.dx.toExponential(2)}
                         disabled
                     />
                     <span>dy:</span>
                     <input
                         type="number"
-                        value={selected.dy.toExponential(4)}
+                        value={selected.dy.toExponential(2)}
                         disabled
                     />
                 </div>
@@ -38,7 +38,7 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
                     <span>Sigma:</span>
                     <input
                         type="number"
-                        value={selected.sigma.toExponential(4)}
+                        value={selected.sigma.toExponential(2)}
                         disabled
                     />
                 </div>
@@ -72,15 +72,17 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
     } else if (penType === "set") {
         headlist = (
             <div className="headdiv">
-                <span>位移放大乘数（x100）:</span>
+                <span>位移乘数（x100）:</span>
                 <input
                     type="number"
+                    className="set"
                     value={dispScale / 100}
                     onChange={(e) => setDispScale(Number(e.target.value) * 100)}
                 />
                 <span>载荷乘数:</span>
                 <input
                     type="number"
+                    className="set"
                     value={loadZoom}
                     onChange={(e) => setLoadZoom(Number(e.target.value))}
                 />

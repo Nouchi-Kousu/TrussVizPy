@@ -1,13 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
-import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext } from "./context"
+import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext, pointsContext, loadsContext } from "./context"
 import * as msgpack from '@msgpack/msgpack'
 
 const Right = () => {
     const [penType] = useContext(penTypeContext) // 画笔类型
     const canvasRef = useRef(null) // 储存画布的引用
     const [selectedPoint, setSelectedPoint] = useState(-1) // 选中的结点编号
-    const [points, setPoints] = useState([]) // 存储结点列表
     const [absoluteMousePosition, setAbsoluteMousePosition] = useState({
         x: 0,
         y: 0,
@@ -19,6 +18,7 @@ const Right = () => {
     const [isAltPressed, setAltPressed] = useState(false) // 是否按下alt键
     const [isShiftPressed, setIsShiftPressed] = useState(false) // 是否按下shift键
     const [isSpacePressed, setIsSpacePressed] = useState(false) // 是否按下空格键
+    const [points, setPoints] = useContext(pointsContext)
     const [delPoint, setDelPoint] = useState(-1) // 删除结点编号
     const [selectedLine, setSelectedLine] = useState(-1) // 选中的杆件编号
     const [isDrawLine, setIsDrawLine] = useState(false)
@@ -26,7 +26,7 @@ const Right = () => {
     const [lines, setLines] = useContext(linesContext)
     const [lineMakingsIdx,] = useContext(lineMakingsIdxContext)
     const [lineMakings,] = useContext(lineMakingsContext)
-    const [loads, setLoads] = useState([])
+    const [loads, setLoads] = useContext(loadsContext)
     const [selectedLoad, setSelectedLoad] = useState(-1)
     const [drawData, setDrawData] = useState({})
     const [resize, setResize] = useState(false)
@@ -48,12 +48,11 @@ const Right = () => {
             const packedData = msgpack.encode(data)
             const packedDataBase64 = btoa(String.fromCharCode(...new Uint8Array(packedData)))
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/get?data=${encodeURIComponent(packedDataBase64)}`)
+                const response = await fetch(`http://127.0.0.1:1224/api/get?data=${encodeURIComponent(packedDataBase64)}`)
                 if (response.ok) {
                     const arrayBuffer = await response.arrayBuffer()
                     const unpackedData = msgpack.decode(new Uint8Array(arrayBuffer))
                     setDrawData({ ...unpackedData.received, isLoad: true })
-                    console.log(drawData)
                 } else {
                     console.error('Request failed:', response.status)
                 }
@@ -344,6 +343,12 @@ const Right = () => {
                             ),
                         }
                     })
+            )
+            setLoads(
+                loads.filter(
+                    (load) =>
+                        !load.point === delPoint
+                )
             )
         }
     }, [delPoint])

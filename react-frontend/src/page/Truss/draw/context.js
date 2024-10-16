@@ -16,3 +16,6 @@ export const lineMakingsContext = createContext(null)
 
 export const saveImageContext = createContext(null)
 
+export const pointsContext = createContext(null)
+
+export const loadsContext = createContext(null)
