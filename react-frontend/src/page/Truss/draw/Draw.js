@@ -1,7 +1,18 @@
 import Right from "./Right"
 import Left from "./Left"
 import SetLineMakings from "./SetLineMakings"
-import { penTypeContext, makingsContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext, pointsContext, loadsContext } from './context'
+import {
+    penTypeContext,
+    makingsContext,
+    linesContext,
+    lineMakingsIdxContext,
+    lineMakingsContext,
+    saveImageContext,
+    pointsContext,
+    loadsContext,
+    isClearContext,
+    isPushContext
+} from './context'
 import { useState } from "react"
 import ReadInp from "./ReadInp"
 
@@ -15,29 +26,35 @@ const Draw = () => {
     const [isReadInp, setIsReadInp] = useState(false)
     const [loads, setLoads] = useState([])
     const [points, setPoints] = useState([]) // 存储结点列表
+    const [isClear, setIsClear] = useState(false)
+    const [isPush, setIsPush] = useState(false)
 
     return (
         <div className="draw">
-            <loadsContext.Provider value={[loads, setLoads]}>
-                <pointsContext.Provider value={[points, setPoints]}>
-                    <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
-                        <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingsIdx]}>
-                            <linesContext.Provider value={[lines, setLines]}>
-                                <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
-                                    <penTypeContext.Provider value={[penType, setPenType]}>
-                                        <saveImageContext.Provider value={[isSave, setIsSave]}>
-                                            <Left isReadInpSet={[isReadInp, setIsReadInp]} />
-                                            <Right isReadInpSet={[isReadInp, setIsReadInp]} />
-                                            {makingsSeting && <SetLineMakings />}
-                                            {isReadInp && <ReadInp isReadInpSet={[isReadInp, setIsReadInp]} />}
-                                        </saveImageContext.Provider>
-                                    </penTypeContext.Provider>
-                                </makingsContext.Provider>
-                            </linesContext.Provider>
-                        </lineMakingsIdxContext.Provider>
-                    </lineMakingsContext.Provider>
-                </pointsContext.Provider>
-            </loadsContext.Provider>
+            <isPushContext.Provider value={[isPush, setIsPush]}>
+            <isClearContext.Provider value={[isClear, setIsClear]}>
+                <loadsContext.Provider value={[loads, setLoads]}>
+                    <pointsContext.Provider value={[points, setPoints]}>
+                        <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
+                            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingsIdx]}>
+                                <linesContext.Provider value={[lines, setLines]}>
+                                    <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
+                                        <penTypeContext.Provider value={[penType, setPenType]}>
+                                            <saveImageContext.Provider value={[isSave, setIsSave]}>
+                                                <Left isReadInpSet={[isReadInp, setIsReadInp]} />
+                                                <Right isReadInpSet={[isReadInp, setIsReadInp]} />
+                                                {makingsSeting && <SetLineMakings />}
+                                                {isReadInp && <ReadInp isReadInpSet={[isReadInp, setIsReadInp]} />}
+                                            </saveImageContext.Provider>
+                                        </penTypeContext.Provider>
+                                    </makingsContext.Provider>
+                                </linesContext.Provider>
+                            </lineMakingsIdxContext.Provider>
+                        </lineMakingsContext.Provider>
+                    </pointsContext.Provider>
+                </loadsContext.Provider>
+            </isClearContext.Provider>
+            </isPushContext.Provider>
         </div>
     )
 }

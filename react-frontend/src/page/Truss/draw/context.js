@@ -19,3 +19,7 @@ export const saveImageContext = createContext(null)
 export const pointsContext = createContext(null)
 
 export const loadsContext = createContext(null)
+
+export const isClearContext = createContext(null)
+
+export const isPushContext = createContext(null)

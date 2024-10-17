@@ -19,6 +19,10 @@ function frontendInputDataToTxt(data) {
         result += `L,${line.points[0]},${line.points[1]},${line.makingsIdx}\n`
     })
 
+    data.loads.forEach(load => {
+        result += `F,${load.point},${load.Fx},${load.Fy}\n`
+    })
+
     return result
 }
 
@@ -53,6 +57,12 @@ function txtToFrontendInputData(txt) {
                 rho: parseFloat(tokens[4]),
                 color: tokens[5] || '#000000'
             })
+        } else if (tokens[0] === 'F') {
+            data.loads.push({
+                point: parseInt(tokens[1], 10),
+                Fx: parseFloat(tokens[2]),
+                Fy: parseFloat(tokens[3])
+            })
         }
     })
 
@@ -85,7 +95,9 @@ const ReadInp = ({ isReadInpSet }) => {
     const [lines, setLines] = useContext(linesContext)
     const [loads, setLoads] = useContext(loadsContext)
     const [makings, setMakings] = useContext(lineMakingsContext)
-    const [isReadInp, setIsReadInp] = isReadInpSet
+    const [, setIsReadInp] = isReadInpSet
+    const [name, setName] = useState('')
+    const [note, setNote] = useState('')
 
     // 处理文件上传
     const onFileUpload = (event) => {
@@ -96,8 +108,8 @@ const ReadInp = ({ isReadInpSet }) => {
         if (frontendData) {
             setPoints([...frontendData.points])
             setLines([...frontendData.lines])
-            setLoads([...frontendData.loads])
             setMakings([...frontendData.makings])
+            setLoads([...frontendData.loads])
         }
     }, [frontendData])
 
@@ -119,6 +131,31 @@ const ReadInp = ({ isReadInpSet }) => {
         URL.revokeObjectURL(url)
     }
 
+    const save = () => {
+        if (name === '') return
+        const newData = {
+            name,
+            time: new Date().toISOString().slice(0, 10),
+            note,
+            data: {
+                points: [...points],
+                lines: [...lines],
+                loads: [...loads],
+                makings: [...makings]
+            }
+        }
+        let data = localStorage.getItem('data')
+        data = data ? JSON.parse(data) : []
+        if (data.some(item => item.name === name)) {
+            data = data.map(item => item.name !== name ? item : newData)
+        } else {
+            data = [...data, newData]
+        }
+        localStorage.setItem('data', JSON.stringify(data))
+    }
+
+    const dataList = JSON.parse(localStorage.getItem('data') ? localStorage.getItem('data') : [])
+
     return (
         <div className="modal-overlay" onClick={() => setIsReadInp(false)}>
             <div className="set" onClick={(e) => e.stopPropagation()} >
@@ -126,11 +163,12 @@ const ReadInp = ({ isReadInpSet }) => {
                 <input type="file" accept=".txt,.inp" onChange={onFileUpload} />
                 <button onClick={downloadTxtFile}>储存为 .inp 文件</button>
                 <h4>浏览器本地存储</h4>
-                结构名称：<input type="text" placeholder="name" onChange={()=>{}} />&nbsp;
-                时间：<input type="datetime-local" placeholder="time" value={new Date().toISOString().slice(0, 16)} onChange={()=>{}} />&nbsp;
-                备注：<input type="number" placeholder="note" onChange={()=>{}} />&nbsp;
-                <span>存储</span>
+                结构名称：<input type="text" placeholder="name" onChange={e => setName(e.target.value)} />&nbsp;
+                时间：<input type="datetime" placeholder="time" disabled value={new Date().toISOString().slice(0, 10)} />&nbsp;
+                备注：<input type="text" placeholder="note" onChange={e => setNote(e.target.value)} />&nbsp;
+                <span onClick={save}>存储</span>
             </div>
+
         </div >
     )
 }

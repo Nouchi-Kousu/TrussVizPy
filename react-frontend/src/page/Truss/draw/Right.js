@@ -1,6 +1,16 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import Head from "./Head"
-import { penTypeContext, linesContext, lineMakingsIdxContext, lineMakingsContext, saveImageContext, pointsContext, loadsContext } from "./context"
+import {
+    penTypeContext,
+    linesContext,
+    lineMakingsIdxContext,
+    lineMakingsContext,
+    saveImageContext,
+    pointsContext,
+    loadsContext,
+    isClearContext,
+    isPushContext
+} from "./context"
 import * as msgpack from '@msgpack/msgpack'
 
 const Right = () => {
@@ -24,8 +34,8 @@ const Right = () => {
     const [isDrawLine, setIsDrawLine] = useState(false)
     const [isDrawLoad, setIsDrawLoad] = useState(false)
     const [lines, setLines] = useContext(linesContext)
-    const [lineMakingsIdx,] = useContext(lineMakingsIdxContext)
-    const [lineMakings,] = useContext(lineMakingsContext)
+    const [lineMakingsIdx, setLineMakingsIdx] = useContext(lineMakingsIdxContext)
+    const [lineMakings, setLineMakings] = useContext(lineMakingsContext)
     const [loads, setLoads] = useContext(loadsContext)
     const [selectedLoad, setSelectedLoad] = useState(-1)
     const [drawData, setDrawData] = useState({})
@@ -34,9 +44,11 @@ const Right = () => {
     const [loadZoom, setLoadZoom] = useState(100)
     const [isSave, setIsSave] = useContext(saveImageContext)
     const [loading, setLoading] = useState(false)
+    const [isClear, setIsClear] = useContext(isClearContext)
+    const [isPush, setIsPush] = useContext(isPushContext)
 
     useEffect(() => {
-        if (loads.length === 0) return
+        if (loads.length === 0 && !isPush) return
         const fetchData = async () => {
             setLoading(true)
             const data = {
@@ -48,7 +60,7 @@ const Right = () => {
             const packedData = msgpack.encode(data)
             const packedDataBase64 = btoa(String.fromCharCode(...new Uint8Array(packedData)))
             try {
-                const response = await fetch(`http://127.0.0.1:1224/api/get?data=${encodeURIComponent(packedDataBase64)}`)
+                const response = await fetch(`http://127.0.0.1:328/api/get?data=${encodeURIComponent(packedDataBase64)}`)
                 if (response.ok) {
                     const arrayBuffer = await response.arrayBuffer()
                     const unpackedData = msgpack.decode(new Uint8Array(arrayBuffer))
@@ -62,7 +74,23 @@ const Right = () => {
             setLoading(false)
         }
         loading || fetchData()
-    }, [points, loads, lines])
+        setIsPush(false)
+    }, [points, loads, lines, lineMakings, isPush])
+
+    useEffect(() => {
+        if (isClear) {
+            setPoints([])
+            setLines([])
+            setLoads([])
+            setLineMakings([{ name: 'Normal', E: 4.8e6, A: 1, rho: 0, color: '#66ccff' }])
+            setSelectedPoint(-1)
+            setSelectedLine(-1)
+            setSelectedLoad(-1)
+            setLineMakingsIdx(0)
+            setDrawData({})
+            setIsClear(false)
+        }
+    }, [isClear])
 
     const saveImage = () => {
         const canvas = canvasRef.current
@@ -163,7 +191,7 @@ const Right = () => {
         const { x, y } = getMousePosition(event)
         const clickedLoadIndex = loads.findIndex((load) => {
             const [startx, starty] = [points[load.point].x, points[load.point].y]
-            const [endx, endy] = [load.Fx + startx, load.Fy + starty]
+            const [endx, endy] = [load.Fx / loadZoom + startx, load.Fy / loadZoom + starty]
             const l1 = Math.hypot(startx * zoomScale - x, starty * zoomScale - y)
             const l2 = Math.hypot(endx * zoomScale - x, endy * zoomScale - y)
             const L = Math.hypot(startx * zoomScale - endx * zoomScale, starty * zoomScale - endy * zoomScale)
@@ -321,7 +349,7 @@ const Right = () => {
                 context.closePath()
             }
         })
-    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad, resize])
+    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad, resize, lineMakings, loadZoom])
 
     // 删除点
     useEffect(() => {
@@ -329,6 +357,7 @@ const Right = () => {
             setPoints(points.filter((_, idx) => idx !== delPoint))
             setDelPoint(-1)
             setSelectedPoint(-1)
+            setSelectedLoad(-1)
             setLines(
                 lines
                     .filter(

@@ -12,7 +12,11 @@ const SetLineMakings = () => {
     }
     const [newMakings, setNewMakings] = useState({ name: "" })
     const addMakings = (e, type) => {
-        setNewMakings(prev => ({ ...prev, [type]: e.target.value }))
+        if (type === 'rho' || type === 'E' || type === 'A') {
+            setNewMakings(prev => ({ ...prev, [type]: Number(e.target.value) }))
+        } else {
+            setNewMakings(prev => ({ ...prev, [type]: e.target.value }))
+        }
     }
     const markingsList = lineMakings.map((item, idx) => {
         return (

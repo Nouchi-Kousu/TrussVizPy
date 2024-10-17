@@ -235,6 +235,10 @@ body {
                 mask: url("../assets/clear.svg") no-repeat center; /* 指定掩膜图像 */
                 mask-size: contain; /* 保持掩膜比例 */
             }
+            &.push {
+                mask: url("../assets/push.svg") no-repeat center; /* 指定掩膜图像 */
+                mask-size: contain; /* 保持掩膜比例 */
+            }
         }
     }
 }

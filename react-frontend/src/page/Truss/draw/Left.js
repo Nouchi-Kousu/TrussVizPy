@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { penTypeContext, saveImageContext } from './context'
+import { penTypeContext, saveImageContext, isClearContext, isPushContext } from './context'
 
 const Left = ({ isReadInpSet }) => {
     const button = [
@@ -12,7 +12,9 @@ const Left = ({ isReadInpSet }) => {
     ]
     const [isReadInp, setIsReadInp] = isReadInpSet
     const [penType, setPenType] = useContext(penTypeContext)
-    const [isSave, setIsSave] = useContext(saveImageContext)
+    const [, setIsSave] = useContext(saveImageContext)
+    const [, setIsClear] = useContext(isClearContext)
+    const [, setIsPush] = useContext(isPushContext)
     const buttons = button.map((item, idx) => (
         penType === item ? <li className={`${item} clicked`} key={item} onClick={() => setPenType(item)}>
             <div className="box">
@@ -35,9 +37,14 @@ const Left = ({ isReadInpSet }) => {
                         <div className="save"></div>
                     </div>
                 </li>
-                <li className="clear" onClick={() => setIsSave(true)}>
+                <li className="clear" onClick={() => setIsClear(window.confirm("确定清除画布？"))}>
                     <div className="box">
                         <div className="clear"></div>
+                    </div>
+                </li>
+                <li className="push" onClick={() => setIsPush(true)}>
+                    <div className="box">
+                        <div className="push"></div>
                     </div>
                 </li>
             </ul>
