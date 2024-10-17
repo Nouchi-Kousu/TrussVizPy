@@ -41,6 +41,7 @@ const SetLineMakings = () => {
             </div>
         )
     })
+
     return (
         <div className="modal-overlay" onClick={closeModal}>
             <div className="makings" onClick={(e) => e.stopPropagation()}>

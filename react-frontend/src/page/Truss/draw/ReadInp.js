@@ -98,6 +98,8 @@ const ReadInp = ({ isReadInpSet }) => {
     const [, setIsReadInp] = isReadInpSet
     const [name, setName] = useState('')
     const [note, setNote] = useState('')
+    const [data, setData] = useState([])
+    const [loadTip, setLoadTip] = useState(false)
 
     // 处理文件上传
     const onFileUpload = (event) => {
@@ -152,9 +154,37 @@ const ReadInp = ({ isReadInpSet }) => {
             data = [...data, newData]
         }
         localStorage.setItem('data', JSON.stringify(data))
+        setLoadTip(n => !n)
     }
 
-    const dataList = JSON.parse(localStorage.getItem('data') ? localStorage.getItem('data') : [])
+    useEffect(() => {
+        const lsdata = localStorage.getItem('data')
+        setData(lsdata ? JSON.parse(lsdata) : [])
+    }, [])
+
+    useEffect(() => {
+        const lsdata = localStorage.getItem('data')
+        setData(lsdata ? JSON.parse(lsdata) : [])
+    }, [loadTip])
+
+    const del = (name) => {
+        let data = localStorage.getItem('data')
+        data = data ? JSON.parse(data) : []
+        data = data.filter(item => item.name !== name)
+        localStorage.setItem('data', JSON.stringify(data))
+        setLoadTip(n => !n)
+    }
+
+    const load = (name) => {
+        console.log(name)
+        const data = JSON.parse(localStorage.getItem('data'))
+        const loadData = data.find((item) => item.name === name)
+        setPoints([...loadData.data.points])
+        setMakings([...loadData.data.makings])
+        setLines([...loadData.data.lines])
+        setLoads([...loadData.data.loads])
+        setLoadTip(n => !n)
+    }
 
     return (
         <div className="modal-overlay" onClick={() => setIsReadInp(false)}>
@@ -162,13 +192,25 @@ const ReadInp = ({ isReadInpSet }) => {
                 <h2>存取数据</h2>
                 <input type="file" accept=".txt,.inp" onChange={onFileUpload} />
                 <button onClick={downloadTxtFile}>储存为 .inp 文件</button>
-                <h4>浏览器本地存储</h4>
-                结构名称：<input type="text" placeholder="name" onChange={e => setName(e.target.value)} />&nbsp;
-                时间：<input type="datetime" placeholder="time" disabled value={new Date().toISOString().slice(0, 10)} />&nbsp;
-                备注：<input type="text" placeholder="note" onChange={e => setNote(e.target.value)} />&nbsp;
-                <span onClick={save}>存储</span>
+                <div className='load'>
+                    <h4>浏览器本地存储</h4>
+                    结构名称：<input type="text" placeholder="name" onChange={e => setName(e.target.value)} />&nbsp;
+                    时间：<input type="datetime" placeholder="time" disabled value={new Date().toISOString().slice(0, 10)} />&nbsp;
+                    备注：<input type="text" placeholder="note" onChange={e => setNote(e.target.value)} />&nbsp;
+                    <span onClick={save} className='button'>存储</span>
+                    {
+                        data.map(item => (
+                            <div>
+                                结构名称：<span className='list'>{item.name}</span>&nbsp;
+                                时间：<span className='list'>{item.time}</span>&nbsp;
+                                备注：<span className='list'>{item.note}</span>&nbsp;
+                                <span onClick={() => del(item.name)} className='button'>删除</span>&nbsp;&nbsp;
+                                <span onClick={() => load(item.name)} className='button'>加载</span>
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
-
         </div >
     )
 }
