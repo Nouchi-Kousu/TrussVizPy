@@ -135,6 +135,8 @@ const Show = () => {
             if (data.points) {
                 setDrawData(data)
             }
+            setSelectedPoint(-1)
+            setSelectedLine(-1)
         }
         channel.onmessage = headleMessage
         return () => {
