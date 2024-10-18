@@ -60,7 +60,7 @@ const Right = () => {
             const packedData = msgpack.encode(data)
             const packedDataBase64 = btoa(String.fromCharCode(...new Uint8Array(packedData)))
             try {
-                const response = await fetch(`http://127.0.0.1:328/api/get?data=${encodeURIComponent(packedDataBase64)}`)
+                const response = await fetch(`/api/get?data=${encodeURIComponent(packedDataBase64)}`)
                 if (response.ok) {
                     const arrayBuffer = await response.arrayBuffer()
                     const unpackedData = msgpack.decode(new Uint8Array(arrayBuffer))
