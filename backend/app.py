@@ -19,7 +19,6 @@ def my_protobuf():
 
     packed_data = base64.b64decode(packed_data_base64)
     data = msgpack.unpackb(packed_data)
-    print(data)
     try:
         data = tp.prepare_frontend_input(data)
         resp = tp.main(data)
