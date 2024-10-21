@@ -62,7 +62,7 @@ const Right = () => {
             const packedData = msgpack.encode(data);
 
             try {
-                const response = await fetch('http://127.0.0.1:1224/api/post/show', {
+                const response = await fetch('/api/post/show', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-msgpack'  // 指定内容类型为 MessagePack
@@ -98,7 +98,7 @@ const Right = () => {
             const packedData = msgpack.encode(data)
 
             try {
-                const response = await fetch('http://127.0.0.1:1224/api/post/pdf', {
+                const response = await fetch('/api/post/pdf', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-msgpack'
