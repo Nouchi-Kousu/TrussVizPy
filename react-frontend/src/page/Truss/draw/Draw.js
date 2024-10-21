@@ -11,7 +11,8 @@ import {
     pointsContext,
     loadsContext,
     isClearContext,
-    isPushContext
+    isPushContext,
+    isGetPdfContext
 } from './context'
 import { useState } from "react"
 import ReadInp from "./ReadInp"
@@ -28,33 +29,36 @@ const Draw = () => {
     const [points, setPoints] = useState([]) // 存储结点列表
     const [isClear, setIsClear] = useState(false)
     const [isPush, setIsPush] = useState(false)
+    const [isGetPdf, setIsGetPdf] = useState(false)
 
     return (
         <div className="draw">
+            <isGetPdfContext.Provider value={[isGetPdf, setIsGetPdf]}>
             <isPushContext.Provider value={[isPush, setIsPush]}>
             <isClearContext.Provider value={[isClear, setIsClear]}>
-                <loadsContext.Provider value={[loads, setLoads]}>
-                    <pointsContext.Provider value={[points, setPoints]}>
-                        <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
-                            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingsIdx]}>
-                                <linesContext.Provider value={[lines, setLines]}>
-                                    <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
-                                        <penTypeContext.Provider value={[penType, setPenType]}>
-                                            <saveImageContext.Provider value={[isSave, setIsSave]}>
-                                                <Left isReadInpSet={[isReadInp, setIsReadInp]} />
-                                                <Right isReadInpSet={[isReadInp, setIsReadInp]} />
-                                                {makingsSeting && <SetLineMakings />}
-                                                {isReadInp && <ReadInp isReadInpSet={[isReadInp, setIsReadInp]} />}
-                                            </saveImageContext.Provider>
-                                        </penTypeContext.Provider>
-                                    </makingsContext.Provider>
-                                </linesContext.Provider>
-                            </lineMakingsIdxContext.Provider>
-                        </lineMakingsContext.Provider>
-                    </pointsContext.Provider>
-                </loadsContext.Provider>
+            <loadsContext.Provider value={[loads, setLoads]}>
+            <pointsContext.Provider value={[points, setPoints]}>
+            <lineMakingsContext.Provider value={[lineMakings, setLineMakings]}>
+            <lineMakingsIdxContext.Provider value={[lineMakingsIdx, setLineMakingsIdx]}>
+            <linesContext.Provider value={[lines, setLines]}>
+            <makingsContext.Provider value={[makingsSeting, setMakingsSetting]}>
+            <penTypeContext.Provider value={[penType, setPenType]}>
+            <saveImageContext.Provider value={[isSave, setIsSave]}>
+                <Left isReadInpSet={[isReadInp, setIsReadInp]} />
+                <Right isReadInpSet={[isReadInp, setIsReadInp]} />
+                {makingsSeting && <SetLineMakings />}
+                {isReadInp && <ReadInp isReadInpSet={[isReadInp, setIsReadInp]} />}
+            </saveImageContext.Provider>
+            </penTypeContext.Provider>
+            </makingsContext.Provider>
+            </linesContext.Provider>
+            </lineMakingsIdxContext.Provider>
+            </lineMakingsContext.Provider>
+            </pointsContext.Provider>
+            </loadsContext.Provider>
             </isClearContext.Provider>
             </isPushContext.Provider>
+            </isGetPdfContext.Provider>
         </div>
     )
 }

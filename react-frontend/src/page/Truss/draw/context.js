@@ -23,3 +23,5 @@ export const loadsContext = createContext(null)
 export const isClearContext = createContext(null)
 
 export const isPushContext = createContext(null)
+
+export const isGetPdfContext = createContext(null)

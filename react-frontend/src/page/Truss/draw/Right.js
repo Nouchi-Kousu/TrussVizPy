@@ -9,7 +9,8 @@ import {
     pointsContext,
     loadsContext,
     isClearContext,
-    isPushContext
+    isPushContext,
+    isGetPdfContext
 } from "./context"
 import * as msgpack from '@msgpack/msgpack'
 
@@ -46,23 +47,31 @@ const Right = () => {
     const [loading, setLoading] = useState(false)
     const [isClear, setIsClear] = useContext(isClearContext)
     const [isPush, setIsPush] = useContext(isPushContext)
+    const [isGetPdf, setIsGetPdf] = useContext(isGetPdfContext)
 
     useEffect(() => {
-        if (loads.length === 0 && !isPush) return
+        if (loads.length === 0 && !isPush) return;
         const fetchData = async () => {
-            setLoading(true)
+            setLoading(true);
             const data = {
                 lines: lines,
                 points: points,
                 loads: loads,
                 makings: lineMakings
             }
-            const packedData = msgpack.encode(data)
-            const packedDataBase64 = btoa(String.fromCharCode(...new Uint8Array(packedData)))
+            const packedData = msgpack.encode(data);
+
             try {
-                const response = await fetch(`/api/get?data=${encodeURIComponent(packedDataBase64)}`)
+                const response = await fetch('http://127.0.0.1:1224/api/post/show', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-msgpack'  // 指定内容类型为 MessagePack
+                    },
+                    body: packedData  // 将数据放在请求体中
+                })
+
                 if (response.ok) {
-                    const arrayBuffer = await response.arrayBuffer()
+                    const arrayBuffer = await response.arrayBuffer();
                     const unpackedData = msgpack.decode(new Uint8Array(arrayBuffer))
                     setDrawData({ ...unpackedData.received, isLoad: true })
                 } else {
@@ -76,6 +85,47 @@ const Right = () => {
         loading || fetchData()
         setIsPush(false)
     }, [points, loads, lines, lineMakings, isPush])
+
+    useEffect(() => {
+        const downloadPdf = async () => {
+            setLoading(true);
+            const data = {
+                lines: lines,
+                points: points,
+                loads: loads,
+                makings: lineMakings
+            };
+            const packedData = msgpack.encode(data)
+
+            try {
+                const response = await fetch('http://127.0.0.1:1224/api/post/pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-msgpack'
+                    },
+                    body: packedData
+                })
+
+                if (response.ok) {
+                    const packedData = await response.arrayBuffer()
+                    const pdfData = msgpack.decode(new Uint8Array(packedData))
+
+                    const blob = new Blob([pdfData], { type: 'application/pdf' })
+                    const link = document.createElement('a')
+                    link.href = window.URL.createObjectURL(blob)
+                    link.download = 'truss_structure.pdf'
+                    link.click()
+                }
+            } catch (error) {
+                console.error('Error downloading PDF:', error)
+            }
+            setLoading(false)
+        }
+        if (isGetPdf) {
+            loading || downloadPdf()
+            setIsGetPdf(false)
+        }
+    }, [isGetPdf])
 
     useEffect(() => {
         if (isClear) {
