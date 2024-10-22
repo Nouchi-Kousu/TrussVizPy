@@ -48,6 +48,9 @@ const Right = () => {
     const [isClear, setIsClear] = useContext(isClearContext)
     const [isPush, setIsPush] = useContext(isPushContext)
     const [isGetPdf, setIsGetPdf] = useContext(isGetPdfContext)
+    const [isTrellis, setIsTrellis] = useState(true)
+    const [trellisStep, setTrellisStep] = useState(1)
+
 
     useEffect(() => {
         if (loads.length === 0 && !isPush) return;
@@ -290,12 +293,57 @@ const Right = () => {
         context.clearRect(-offset.x, -offset.y, canvas.width, canvas.height) // 清空整个画布
         context.beginPath()
         context.strokeStyle = '#000000'
-        context.lineWidth = 2
-        context.moveTo(0, 0)
-        context.lineTo(60, 0) // x 轴
-        context.moveTo(0, 0)
-        context.lineTo(0, 60) // y 轴
+        context.lineWidth = 1.5
+        context.moveTo(-offset.x, 0)
+        context.lineTo(canvas.width - offset.x, 0) // x 轴
+        context.moveTo(0, -offset.y)
+        context.lineTo(0, canvas.height - offset.y) // y 轴
         context.stroke()
+
+        if (isTrellis) {
+            for (let i = 0; trellisStep * zoomScale * i < canvas.width - offset.x; i++) {
+                if (trellisStep * zoomScale * i > - offset.x) {
+                    context.beginPath()
+                    context.strokeStyle = '#c2c2c2'
+                    context.lineWidth = 0.5
+                    context.moveTo(trellisStep * zoomScale * i, -offset.y)
+                    context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
+                    context.stroke()
+                }
+            }
+            for (let i = -1; trellisStep * zoomScale * i > -offset.x; i--) {
+                if (trellisStep * zoomScale * i < canvas.width - offset.x) {
+                    context.beginPath()
+                    context.strokeStyle = '#c2c2c2'
+                    context.lineWidth = 0.5
+                    context.moveTo(trellisStep * zoomScale * i, -offset.y)
+                    context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
+                    context.stroke()
+                }
+            }
+            for (let i = 0; trellisStep * zoomScale * i < canvas.height - offset.y; i++) {
+                if (trellisStep * zoomScale * i > - offset.y) {
+                    context.beginPath()
+                    context.strokeStyle = '#c2c2c2'
+                    context.lineWidth = 0.5
+                    context.moveTo(-offset.x, trellisStep * zoomScale * i)
+                    context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
+                    context.stroke()
+                }
+            }
+            for (let i = -1; trellisStep * zoomScale * i > -offset.y; i--) {
+                if (trellisStep * zoomScale * i < canvas.height - offset.y) {
+                    context.beginPath()
+                    context.strokeStyle = '#c2c2c2'
+                    context.lineWidth = 0.5
+                    context.moveTo(-offset.x, trellisStep * zoomScale * i)
+                    context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
+                    context.stroke()
+                }
+            }
+
+
+        }
 
         loads.forEach((load, idx) => {
             if (idx === selectedLoad) {
