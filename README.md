@@ -37,6 +37,8 @@ cd ./react-frontend
 npm run build
 ```
 
+或从 [Releases](https://github.com/Nouchi-Kousu/TrussVizPy/releases) 下载已构建好的压缩包进行部署。
+
 具体部署方式可自行选择
 
 ## 使用
