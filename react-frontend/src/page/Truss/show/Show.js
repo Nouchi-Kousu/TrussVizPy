@@ -28,7 +28,7 @@ const Show = () => {
         x: 0,
         y: 0,
     }) // 鼠标位置
-    const [dispScale, setDispScale] = useState(1000)
+    const [dispScale, setDispScale] = useState(100)
     const [loadZoom, setLoadZoom] = useState(100)
     const [isSave, setIsSave] = useState(false)
     const [penType, setPenType] = useState(null)
@@ -211,7 +211,7 @@ const Show = () => {
                     context.lineTo(end.x * zoomScale, end.y * zoomScale)
                 }
                 context.strokeStyle = "#39c5bb"
-                context.lineWidth = 2
+                context.lineWidth = 3
                 context.stroke()
                 context.closePath()
                 context.shadowColor = "transparent" // 关闭阴影
@@ -270,13 +270,6 @@ const Show = () => {
             const minSigma = Math.min(...sigmas)
             const maxSigma = Math.max(...sigmas)
 
-            drawData.loads.forEach((load, idx) => {
-                const startx = (drawData.points[load.point].x + drawData.points[load.point].dx * dispScale) * zoomScale
-                const starty = (drawData.points[load.point].y + drawData.points[load.point].dy * dispScale) * zoomScale
-                const endx = load.Fx / loadZoom * zoomScale + startx
-                const endy = load.Fy / loadZoom * zoomScale + starty
-                drawArrow(context, startx, starty, endx, endy)
-            })
 
             // 绘制线条（杆件）
             drawData.lines.forEach((line, idx) => {
@@ -308,12 +301,45 @@ const Show = () => {
                 context.shadowOffsetY = 0
             })
 
+            drawData.loads.forEach((load, idx) => {
+                const startx = (drawData.points[load.point].x + drawData.points[load.point].dx * dispScale) * zoomScale
+                const starty = (drawData.points[load.point].y + drawData.points[load.point].dy * dispScale) * zoomScale
+                const endx = load.Fx / loadZoom * zoomScale + startx
+                const endy = load.Fy / loadZoom * zoomScale + starty
+                drawArrow(context, startx, starty, endx, endy)
+            })
+
             // 绘制节点
             drawData.points.forEach((point, idx) => {
                 context.fillStyle = idx === selectedPoint ? "red" : "blue"
                 context.beginPath()
                 context.arc((point.x + point.dx * dispScale) * zoomScale, (point.y + point.dy * dispScale) * zoomScale, 5, 0, Math.PI * 2)
                 context.fill()
+                if (point.Constraint_Type === 2) {
+                    context.beginPath()
+                    context.moveTo(point.x * zoomScale, point.y * zoomScale)
+                    context.lineTo(point.x * zoomScale - 12, point.y * zoomScale)
+                    context.lineTo(point.x * zoomScale, point.y * zoomScale - 12)
+                    context.lineTo(point.x * zoomScale, point.y * zoomScale)
+                    context.strokeStyle = "black"
+                    context.lineWidth = 2
+                    context.stroke()
+                    context.closePath()
+                } else if (point.Constraint_Type === 1) {
+                    context.beginPath()
+                    context.moveTo(
+                        point.x * zoomScale - 12 * Math.cos(point.theta),
+                        point.y * zoomScale - 12 * Math.sin(point.theta)
+                    )
+                    context.lineTo(
+                        point.x * zoomScale + 12 * Math.cos(point.theta),
+                        point.y * zoomScale + 12 * Math.sin(point.theta)
+                    )
+                    context.strokeStyle = "black"
+                    context.lineWidth = 2
+                    context.stroke()
+                    context.closePath()
+                }
             })
 
             const canvasHeight = canvas.height

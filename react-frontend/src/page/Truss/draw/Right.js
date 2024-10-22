@@ -353,23 +353,6 @@ const Right = () => {
 
         }
 
-        loads.forEach((load, idx) => {
-            if (idx === selectedLoad) {
-                context.shadowColor = 'rgba(0, 0, 0, 0.5)'
-                context.shadowBlur = 10
-                context.shadowOffsetX = 5
-                context.shadowOffsetY = 5
-            }
-            const startx = points[load.point].x * zoomScale
-            const starty = points[load.point].y * zoomScale
-            const endx = load.Fx / loadZoom * zoomScale + startx
-            const endy = load.Fy / loadZoom * zoomScale + starty
-            drawArrow(context, startx, starty, endx, endy)
-            context.shadowColor = 'transparent' // 关闭阴影
-            context.shadowBlur = 0
-            context.shadowOffsetX = 0
-            context.shadowOffsetY = 0
-        })
 
         lines.forEach((line, idx) => {
             if (idx === selectedLine) {
@@ -395,9 +378,27 @@ const Right = () => {
                 console.log(end.x, end.y)
             }
             context.strokeStyle = lineMakings[line.makingsIdx].color
-            context.lineWidth = idx === selectedLine ? 4 : 2
+            context.lineWidth = idx === selectedLine ? 4 : 3
             context.stroke()
             context.closePath()
+            context.shadowColor = 'transparent' // 关闭阴影
+            context.shadowBlur = 0
+            context.shadowOffsetX = 0
+            context.shadowOffsetY = 0
+        })
+
+        loads.forEach((load, idx) => {
+            if (idx === selectedLoad) {
+                context.shadowColor = 'rgba(0, 0, 0, 0.5)'
+                context.shadowBlur = 10
+                context.shadowOffsetX = 5
+                context.shadowOffsetY = 5
+            }
+            const startx = points[load.point].x * zoomScale
+            const starty = points[load.point].y * zoomScale
+            const endx = load.Fx / loadZoom * zoomScale + startx
+            const endy = load.Fy / loadZoom * zoomScale + starty
+            drawArrow(context, startx, starty, endx, endy)
             context.shadowColor = 'transparent' // 关闭阴影
             context.shadowBlur = 0
             context.shadowOffsetX = 0
@@ -482,7 +483,7 @@ const Right = () => {
             setLoads(
                 loads.filter(
                     (load) =>
-                        !load.point === delPoint
+                        !(load.point === delPoint)
                 )
             )
         }
@@ -500,6 +501,7 @@ const Right = () => {
                 setAbsoluteMousePosition({ x, y })
             } else if (penType === "point") {
                 setSelectedLine(-1)
+                setSelectedLoad(-1)
                 const { x, y } = getMousePosition(event)
                 const clickedPointIndex = getSelectedPoint(event)
                 setSelectedPoint(clickedPointIndex)
@@ -624,12 +626,12 @@ const Right = () => {
                 offsetDraw(event)
             } else if (penType === "point") {
                 let { x, y } = getMousePosition(event)
-                if (isTrellis && (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
+                if (isTrellis && (Math.abs(x / zoomScale) % trellisStep * zoomScale < 3 || Math.abs(x / zoomScale) % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
                     x = Math.round(x / zoomScale / trellisStep) * trellisStep
                 } else {
                     x = x / zoomScale
                 }
-                if (isTrellis && (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
+                if (isTrellis && (Math.abs(y / zoomScale) % trellisStep * zoomScale < 3 || Math.abs(y / zoomScale) % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
                     y = Math.round(y / zoomScale / trellisStep) * trellisStep
                 } else {
                     y = y / zoomScale
@@ -661,10 +663,10 @@ const Right = () => {
         } else if (isDrawLoad) {
             let { x, y } = getMousePosition(event)
             if (isTrellis) {
-                if (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                if (Math.abs(x / zoomScale) % trellisStep * zoomScale < 3 || Math.abs(x / zoomScale) % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
                     x = Math.round(x / zoomScale / trellisStep) * trellisStep * zoomScale
                 }
-                if (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                if (Math.abs(y / zoomScale) % trellisStep * zoomScale < 3 || Math.abs(y / zoomScale) % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
                     y = Math.round(y / zoomScale / trellisStep) * trellisStep * zoomScale
                 }
             }
