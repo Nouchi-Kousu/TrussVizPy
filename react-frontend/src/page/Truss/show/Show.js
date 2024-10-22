@@ -352,8 +352,8 @@ const Show = () => {
                 } else if (point.Constraint_Type === 1) {
                     context.beginPath()
                     context.moveTo(
-                        point.x * zoomScale - 12 * Math.cos(point.theta),
-                        point.y * zoomScale - 12 * Math.sin(point.theta)
+                        (point.x + point.dx) * zoomScale - 12 * Math.cos(point.theta),
+                        (point.y + point.dy) * zoomScale - 12 * Math.sin(point.theta)
                     )
                     context.lineTo(
                         point.x * zoomScale + 12 * Math.cos(point.theta),
