@@ -312,7 +312,7 @@ const Right = () => {
             for (let i = 0; trellisStep * zoomScale * i < canvas.width - offset.x; i++) {
                 if (trellisStep * zoomScale * i > - offset.x) {
                     context.beginPath()
-                    context.strokeStyle = '#c2c2c2'
+                    context.strokeStyle = '#e8e8e8'
                     context.lineWidth = 0.5
                     context.moveTo(trellisStep * zoomScale * i, -offset.y)
                     context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
@@ -322,7 +322,7 @@ const Right = () => {
             for (let i = -1; trellisStep * zoomScale * i > -offset.x; i--) {
                 if (trellisStep * zoomScale * i < canvas.width - offset.x) {
                     context.beginPath()
-                    context.strokeStyle = '#c2c2c2'
+                    context.strokeStyle = '#e8e8e8'
                     context.lineWidth = 0.5
                     context.moveTo(trellisStep * zoomScale * i, -offset.y)
                     context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
@@ -332,7 +332,7 @@ const Right = () => {
             for (let i = 0; trellisStep * zoomScale * i < canvas.height - offset.y; i++) {
                 if (trellisStep * zoomScale * i > - offset.y) {
                     context.beginPath()
-                    context.strokeStyle = '#c2c2c2'
+                    context.strokeStyle = '#e8e8e8'
                     context.lineWidth = 0.5
                     context.moveTo(-offset.x, trellisStep * zoomScale * i)
                     context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
@@ -342,7 +342,7 @@ const Right = () => {
             for (let i = -1; trellisStep * zoomScale * i > -offset.y; i--) {
                 if (trellisStep * zoomScale * i < canvas.height - offset.y) {
                     context.beginPath()
-                    context.strokeStyle = '#c2c2c2'
+                    context.strokeStyle = '#e8e8e8'
                     context.lineWidth = 0.5
                     context.moveTo(-offset.x, trellisStep * zoomScale * i)
                     context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
@@ -551,8 +551,8 @@ const Right = () => {
                 }
             } else if (penType === "constraint2") {
                 const clickedPointIndex = getSelectedPoint(event)
+                setSelectedPoint(clickedPointIndex)
                 if (clickedPointIndex !== -1) {
-                    setSelectedPoint(clickedPointIndex)
                     setPoints(
                         points.map((point, idx) =>
                             idx === clickedPointIndex
@@ -583,8 +583,8 @@ const Right = () => {
             } else if (penType === "load") {
                 const clickedLoadIndex = getSelectedLoad(event)
                 const clickedPointIndex = getSelectedPoint(event)
+                setSelectedPoint(clickedPointIndex)
                 if (clickedPointIndex !== -1 && !isDrawLoad) {
-                    setSelectedPoint(clickedPointIndex)
                     setSelectedLoad(loads.length)
                     setIsDrawLoad(true)
                     setLoads(
@@ -624,12 +624,12 @@ const Right = () => {
                 offsetDraw(event)
             } else if (penType === "point") {
                 let { x, y } = getMousePosition(event)
-                if (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                if (isTrellis && (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
                     x = Math.round(x / zoomScale / trellisStep) * trellisStep
                 } else {
                     x = x / zoomScale
                 }
-                if (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                if (isTrellis && (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3)) {
                     y = Math.round(y / zoomScale / trellisStep) * trellisStep
                 } else {
                     y = y / zoomScale
@@ -659,14 +659,22 @@ const Right = () => {
                 )
             )
         } else if (isDrawLoad) {
-            const { x, y } = getMousePosition(event)
+            let { x, y } = getMousePosition(event)
+            if (isTrellis) {
+                if (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                    x = Math.round(x / zoomScale / trellisStep) * trellisStep * zoomScale
+                }
+                if (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                    y = Math.round(y / zoomScale / trellisStep) * trellisStep * zoomScale
+                }
+            }
             setLoads(
                 loads.map((load, idx) =>
                     idx === selectedLoad
                         ? {
                             ...load,
-                            Fx: (x / zoomScale - points[load.point].x) * loadZoom,
-                            Fy: (y / zoomScale - points[load.point].y) * loadZoom
+                            Fx: Math.abs(x - points[load.point].x * zoomScale) < 3 ? 0 : (x / zoomScale - points[load.point].x) * loadZoom,
+                            Fy: Math.abs(y - points[load.point].y * zoomScale) < 3 ? 0 : (y / zoomScale - points[load.point].y) * loadZoom
                         }
                         : load
                 )
