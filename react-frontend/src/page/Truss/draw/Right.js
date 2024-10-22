@@ -455,7 +455,7 @@ const Right = () => {
                 context.closePath()
             }
         })
-    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad, resize, lineMakings, loadZoom])
+    }, [points, selectedPoint, offset, zoomScale, lines, selectedLine, loads, selectedLoad, resize, lineMakings, loadZoom, isTrellis, trellisStep])
 
     // 删除点
     useEffect(() => {
@@ -780,6 +780,8 @@ const Right = () => {
                 loadsSet={[loads, setLoads]}
                 selectedLoadSet={[selectedLoad, setSelectedLoad]}
                 loadZoomSet={[loadZoom, setLoadZoom]}
+                isTrellisSet={[isTrellis, setIsTrellis]}
+                trellisStepSet={[trellisStep, setTrellisStep]}
             />
             <div className="canvas">
                 <canvas

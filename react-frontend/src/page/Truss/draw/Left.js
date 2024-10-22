@@ -6,6 +6,8 @@ import {
     isPushContext,
     isGetPdfContext
 } from './context'
+import { Tooltip } from 'react-kui'
+
 
 const Left = ({ isReadInpSet }) => {
     const button = [
@@ -32,42 +34,56 @@ const Left = ({ isReadInpSet }) => {
     const [, setIsGetPdf] = useContext(isGetPdfContext)
 
     const buttons = button.map((item, idx) => (
-        penType === item ? <li className={`${item} clicked`} key={item} onClick={() => setPenType(item)} title={title[idx]}>
-            <div className="box">
-                <div className={item}></div>
-            </div>
-        </li>
-            : <li className={`${item}`} key={item} onClick={() => setPenType(item)} title={title[idx]}>
-                <div className="box">
-                    <div className={item}></div>
-                </div>
-            </li>
+        penType === item ?
+            <Tooltip title={title[idx]} placement="right">
+                <li className={`${item} clicked`} key={item} onClick={() => setPenType(item)}>
+                    <div className="box">
+                        <div className={item}></div>
+                    </div>
+                </li>
+            </Tooltip>
+            :
+            <Tooltip title={title[idx]} placement="right">
+                <li className={`${item}`} key={item} onClick={() => setPenType(item)} title={title[idx]}>
+                    <div className="box">
+                        <div className={item}></div>
+                    </div>
+                </li>
+            </Tooltip>
     ))
     return (
         <div className="left">
             <ul className="leftButton">
                 <li className="logo" onClick={() => setIsReadInp(true)}></li>
                 {buttons}
-                <li className="save" onClick={() => setIsSave(true)} title="保存为图片">
-                    <div className="box">
-                        <div className="save"></div>
-                    </div>
-                </li>
-                <li className="clear" onClick={() => setIsClear(window.confirm("确定清除画布？"))} title="清除画布">
-                    <div className="box">
-                        <div className="clear"></div>
-                    </div>
-                </li>
-                <li className="push" onClick={() => setIsPush(true)} title="强制提交计算">
-                    <div className="box">
-                        <div className="push"></div>
-                    </div>
-                </li>
-                <li className="pdf" onClick={() => setIsGetPdf(true)} title="下载报告文件">
-                    <div className="box">
-                        <div className="pdf"></div>
-                    </div>
-                </li>
+                <Tooltip title="保存为图片" placement="right">
+                    <li className="save" onClick={() => setIsSave(true)}>
+                        <div className="box">
+                            <div className="save"></div>
+                        </div>
+                    </li>
+                </Tooltip>
+                <Tooltip title="清除画布" placement="right">
+                    <li className="clear" onClick={() => setIsClear(window.confirm("确定清除画布？"))}>
+                        <div className="box">
+                            <div className="clear"></div>
+                        </div>
+                    </li>
+                </Tooltip>
+                <Tooltip title="强制提交计算" placement="right">
+                    <li className="push" onClick={() => setIsPush(true)}>
+                        <div className="box">
+                            <div className="push"></div>
+                        </div>
+                    </li>
+                </Tooltip>
+                <Tooltip title="下载报告文件" placement="right">
+                    <li className="pdf" onClick={() => setIsGetPdf(true)}>
+                        <div className="box">
+                            <div className="pdf"></div>
+                        </div>
+                    </li>
+                </Tooltip>
             </ul>
         </div>
     )

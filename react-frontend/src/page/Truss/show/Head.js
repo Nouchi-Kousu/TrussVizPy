@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Switch, Input } from 'react-kui'
 
 const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleSet, loadZoomSet, isAbsSet }) => {
     const [zoomScale, setZoomScale] = zoomScaleSet
@@ -87,7 +88,11 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
                     onChange={(e) => setLoadZoom(Number(e.target.value))}
                 />
                 <span>应力绝对值:</span>
-                <input className="isAbs" type="checkbox" checked={isAbs} onChange={(e) => setIsAbs(e.target.checked)} />
+                <Switch
+                    size="small"
+                    checked={isAbs}
+                    onChange={(checked) => setIsAbs(checked)}
+                />
             </div>
         )
     }

@@ -5,6 +5,9 @@ import {
     lineMakingsIdxContext,
     lineMakingsContext,
 } from "./context"
+import { Switch } from 'react-kui'
+import { Tooltip } from 'react-kui'
+
 
 const Head = ({
     selectedPointSet,
@@ -17,7 +20,9 @@ const Head = ({
     offsetSet,
     loadsSet,
     selectedLoadSet,
-    loadZoomSet
+    loadZoomSet,
+    isTrellisSet,
+    trellisStepSet
 }) => {
     const [penType] = useContext(penTypeContext)
     const [selectedPoint, setSelectedPoint] = selectedPointSet
@@ -26,7 +31,7 @@ const Head = ({
     const [xValue, setXValue] = useState(0)
     const [yValue, setYValue] = useState(0)
     const [, setMakingsSetting] = useContext(makingsContext)
-    const [lineMakings, setLineMakings] = useContext(lineMakingsContext)
+    const [lineMakings,] = useContext(lineMakingsContext)
     const [lineMakingsIdx, setLineMakingsIdx] = useContext(
         lineMakingsIdxContext
     )
@@ -37,6 +42,8 @@ const Head = ({
     const [loads, setLoads] = loadsSet
     const [selectedLoad, setSelectedLoad] = selectedLoadSet
     const [loadZoom, setLoadZoom] = loadZoomSet
+    const [isTrellis, setIsTrellis] = isTrellisSet
+    const [trellisStep, setTrellisStep] = trellisStepSet
 
     useEffect(() => {
         if (selectedPoint !== -1) {
@@ -77,6 +84,19 @@ const Head = ({
                     type="number"
                     value={zoomScale}
                     onChange={(e) => setZoomScale(Number(e.target.value))}
+                />
+                <span>网格距离:</span>
+                <input
+                    value={trellisStep.toExponential(0)}
+                    disabled
+                    className="step"
+                />
+                <span>开启网格</span>
+                <Switch
+                    size="small"
+                    checked={isTrellis}
+                    onChange={(checked) => setIsTrellis(checked)}
+                    style={{ boxShadow: '0 0 0', userSelect: 'none', outline: 'none' }}
                 />
             </div>
         </>
@@ -217,6 +237,7 @@ const Head = ({
         } else if (penTy === "grab") {
             setOffset({ x: 50, y: 50 })
             setZoomScale(100)
+            setTrellisStep(1)
         } else if (penTy === "point") {
             setSelectedPoint(-1)
         }
