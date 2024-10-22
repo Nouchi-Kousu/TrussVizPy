@@ -1,5 +1,7 @@
 # TrussVizPy
 
+[![DOI](https://zenodo.org/badge/857568498.svg)](https://doi.org/10.5281/zenodo.13968273)
+
 TrussVizPy 是一款基于 Python 和 React 的开源工具，用于平面桁架的静力分析。通过直观的拖拽操作，用户可以快速构建桁架模型，并自定义节点和杆件属性。内置的求解器可高效计算桁架内力和变形，并以图形方式展示结果。TrussVizPy 适用于结构工程教学、科研以及小型工程项目的初步设计。
 
 ## 快速开始
