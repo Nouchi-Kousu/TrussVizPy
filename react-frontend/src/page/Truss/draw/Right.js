@@ -53,6 +53,14 @@ const Right = () => {
 
 
     useEffect(() => {
+        if (trellisStep * zoomScale < 50) {
+            setTrellisStep(n => n * 10)
+        } else if (trellisStep * zoomScale > 500) {
+            setTrellisStep(n => n / 10)
+        }
+    }, [zoomScale])
+
+    useEffect(() => {
         if (loads.length === 0 && !isPush) return;
         const fetchData = async () => {
             setLoading(true);
@@ -417,10 +425,10 @@ const Right = () => {
                 )
                 context.lineTo(
                     point.x * zoomScale - 12,
-                    point.y * zoomScale
+                    point.y * zoomScale - 12
                 )
                 context.lineTo(
-                    point.x * zoomScale,
+                    point.x * zoomScale + 12,
                     point.y * zoomScale - 12
                 )
                 context.lineTo(
@@ -615,11 +623,21 @@ const Right = () => {
             if (penType === "grab" || isSpacePressed) {
                 offsetDraw(event)
             } else if (penType === "point") {
-                const { x, y } = getMousePosition(event)
+                let { x, y } = getMousePosition(event)
+                if (x / zoomScale % trellisStep * zoomScale < 3 || x / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                    x = Math.round(x / zoomScale / trellisStep) * trellisStep
+                } else {
+                    x = x / zoomScale
+                }
+                if (y / zoomScale % trellisStep * zoomScale < 3 || y / zoomScale % trellisStep * zoomScale > trellisStep * zoomScale - 3) {
+                    y = Math.round(y / zoomScale / trellisStep) * trellisStep
+                } else {
+                    y = y / zoomScale
+                }
                 setPoints(
                     points.map((point, idx) =>
                         idx === selectedPoint
-                            ? { ...point, x: x / zoomScale, y: y / zoomScale }
+                            ? { ...point, x: x, y: y }
                             : point
                     )
                 )
