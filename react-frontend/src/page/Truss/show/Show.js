@@ -235,11 +235,23 @@ const Show = () => {
                 context.fill()
                 if (point.Constraint_Type === 2) {
                     context.beginPath()
-                    context.moveTo(point.x * zoomScale, point.y * zoomScale)
-                    context.lineTo(point.x * zoomScale - 12, point.y * zoomScale)
-                    context.lineTo(point.x * zoomScale, point.y * zoomScale - 12)
-                    context.lineTo(point.x * zoomScale, point.y * zoomScale)
-                    context.strokeStyle = "black"
+                    context.moveTo(
+                        point.x * zoomScale,
+                        point.y * zoomScale
+                    )
+                    context.lineTo(
+                        point.x * zoomScale - 12,
+                        point.y * zoomScale - 12
+                    )
+                    context.lineTo(
+                        point.x * zoomScale + 12,
+                        point.y * zoomScale - 12
+                    )
+                    context.lineTo(
+                        point.x * zoomScale,
+                        point.y * zoomScale
+                    )
+                    context.strokeStyle = 'black'
                     context.lineWidth = 2
                     context.stroke()
                     context.closePath()
@@ -253,7 +265,7 @@ const Show = () => {
                         point.x * zoomScale + 12 * Math.cos(point.theta),
                         point.y * zoomScale + 12 * Math.sin(point.theta)
                     )
-                    context.strokeStyle = "black"
+                    context.strokeStyle = 'black'
                     context.lineWidth = 2
                     context.stroke()
                     context.closePath()
@@ -317,11 +329,23 @@ const Show = () => {
                 context.fill()
                 if (point.Constraint_Type === 2) {
                     context.beginPath()
-                    context.moveTo(point.x * zoomScale, point.y * zoomScale)
-                    context.lineTo(point.x * zoomScale - 12, point.y * zoomScale)
-                    context.lineTo(point.x * zoomScale, point.y * zoomScale - 12)
-                    context.lineTo(point.x * zoomScale, point.y * zoomScale)
-                    context.strokeStyle = "black"
+                    context.moveTo(
+                        point.x * zoomScale,
+                        point.y * zoomScale
+                    )
+                    context.lineTo(
+                        point.x * zoomScale - 12,
+                        point.y * zoomScale - 12
+                    )
+                    context.lineTo(
+                        point.x * zoomScale + 12,
+                        point.y * zoomScale - 12
+                    )
+                    context.lineTo(
+                        point.x * zoomScale,
+                        point.y * zoomScale
+                    )
+                    context.strokeStyle = 'black'
                     context.lineWidth = 2
                     context.stroke()
                     context.closePath()
@@ -335,7 +359,7 @@ const Show = () => {
                         point.x * zoomScale + 12 * Math.cos(point.theta),
                         point.y * zoomScale + 12 * Math.sin(point.theta)
                     )
-                    context.strokeStyle = "black"
+                    context.strokeStyle = 'black'
                     context.lineWidth = 2
                     context.stroke()
                     context.closePath()
