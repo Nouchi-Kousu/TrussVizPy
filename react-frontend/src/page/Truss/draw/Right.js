@@ -349,8 +349,6 @@ const Right = () => {
                     context.stroke()
                 }
             }
-
-
         }
 
 

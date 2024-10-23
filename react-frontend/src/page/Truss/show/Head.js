@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Switch, Input } from 'react-kui'
 
-const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleSet, loadZoomSet, isAbsSet }) => {
+const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleSet, loadZoomSet, isAbsSet, isTrellisSet, trellisStepSet }) => {
     const [zoomScale, setZoomScale] = zoomScaleSet
     const [offset, setOffset] = offsetSet
     const [dispScale, setDispScale] = dispScaleSet
@@ -14,6 +14,10 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
         "choose",
         "save"
     ]
+    const [isTrellis, setIsTrellis] = isTrellisSet
+    const [trellisStep, setTrellisStep] = trellisStepSet
+
+    
     let headlist = <></>
     if (penType === "choose") {
         if (selected.type === "point") {
@@ -92,6 +96,13 @@ const Head = ({ zoomScaleSet, offsetSet, saved, penTypeSet, selected, dispScaleS
                     size="small"
                     checked={isAbs}
                     onChange={(checked) => setIsAbs(checked)}
+                />
+                <span>开启网格</span>
+                <Switch
+                    size="small"
+                    checked={isTrellis}
+                    onChange={(checked) => setIsTrellis(checked)}
+                    style={{ boxShadow: '0 0 0', userSelect: 'none', outline: 'none' }}
                 />
             </div>
         )

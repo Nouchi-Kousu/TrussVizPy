@@ -36,6 +36,17 @@ const Show = () => {
     const [selectedPoint, setSelectedPoint] = useState(-1)
     const [selected, setSelected] = useState({})
     const [isAbs, setIsAbs] = useState(false)
+    const [isTrellis, setIsTrellis] = useState(true)
+    const [trellisStep, setTrellisStep] = useState(1)
+
+
+    useEffect(() => {
+        if (trellisStep * zoomScale < 50) {
+            setTrellisStep(n => n * 10)
+        } else if (trellisStep * zoomScale > 500) {
+            setTrellisStep(n => n / 10)
+        }
+    }, [zoomScale])
 
     const saveImage = () => {
         const canvas = canvasRef.current
@@ -184,14 +195,57 @@ const Show = () => {
         context.scale(1, -1) // 翻转 y 轴
 
         context.clearRect(-offset.x, -offset.y, canvas.width, canvas.height) // 清空整个画布
-        context.beginPath()
-        context.strokeStyle = "#000000"
-        context.lineWidth = 2
-        context.moveTo(0, 0)
-        context.lineTo(60, 0) // x 轴
-        context.moveTo(0, 0)
-        context.lineTo(0, 60) // y 轴
-        context.stroke()
+        
+        if (isTrellis) {
+            context.beginPath()
+            context.strokeStyle = '#000000'
+            context.lineWidth = 1.5
+            context.moveTo(-offset.x, 0)
+            context.lineTo(canvas.width - offset.x, 0) // x 轴
+            context.moveTo(0, -offset.y)
+            context.lineTo(0, canvas.height - offset.y) // y 轴
+            context.stroke()
+            for (let i = 0; trellisStep * zoomScale * i < canvas.width - offset.x; i++) {
+                if (trellisStep * zoomScale * i > - offset.x) {
+                    context.beginPath()
+                    context.strokeStyle = '#e8e8e8'
+                    context.lineWidth = 0.5
+                    context.moveTo(trellisStep * zoomScale * i, -offset.y)
+                    context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
+                    context.stroke()
+                }
+            }
+            for (let i = -1; trellisStep * zoomScale * i > -offset.x; i--) {
+                if (trellisStep * zoomScale * i < canvas.width - offset.x) {
+                    context.beginPath()
+                    context.strokeStyle = '#e8e8e8'
+                    context.lineWidth = 0.5
+                    context.moveTo(trellisStep * zoomScale * i, -offset.y)
+                    context.lineTo(trellisStep * zoomScale * i, canvas.height - offset.y)
+                    context.stroke()
+                }
+            }
+            for (let i = 0; trellisStep * zoomScale * i < canvas.height - offset.y; i++) {
+                if (trellisStep * zoomScale * i > - offset.y) {
+                    context.beginPath()
+                    context.strokeStyle = '#e8e8e8'
+                    context.lineWidth = 0.5
+                    context.moveTo(-offset.x, trellisStep * zoomScale * i)
+                    context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
+                    context.stroke()
+                }
+            }
+            for (let i = -1; trellisStep * zoomScale * i > -offset.y; i--) {
+                if (trellisStep * zoomScale * i < canvas.height - offset.y) {
+                    context.beginPath()
+                    context.strokeStyle = '#e8e8e8'
+                    context.lineWidth = 0.5
+                    context.moveTo(-offset.x, trellisStep * zoomScale * i)
+                    context.lineTo(canvas.width - offset.x, trellisStep * zoomScale * i)
+                    context.stroke()
+                }
+            }
+        }
 
         if (!drawData.isLoad) {
             drawData.lines.forEach((line, idx) => {
@@ -393,7 +447,7 @@ const Show = () => {
             context.restore() // 恢复到反转坐标之前的状态
         }
 
-    }, [drawData, resize, offset, zoomScale, resize, dispScale, loadZoom, selectedLine, isAbs, selectedPoint])
+    }, [drawData, resize, offset, zoomScale, resize, dispScale, loadZoom, selectedLine, isAbs, selectedPoint, isTrellis, trellisStep])
 
 
     // 鼠标摁下
@@ -537,6 +591,8 @@ const Show = () => {
                 dispScaleSet={[dispScale, setDispScale]}
                 loadZoomSet={[loadZoom, setLoadZoom]}
                 isAbsSet={[isAbs, setIsAbs]}
+                isTrellisSet={[isTrellis, setIsTrellis]}
+                trellisStepSet={[trellisStep, setTrellisStep]}
             />
             <div className="canvas">
                 <canvas
