@@ -12,6 +12,7 @@ TrussVizPy 是一款基于 Python 和 React 的开源工具，用于平面桁架
 pip install -r ./backend/requirements.txt
 npm install -g sass
 npm install -g msgpack
+npm install -g react-kui
 ```
 
 #### 2. 启动服务：
