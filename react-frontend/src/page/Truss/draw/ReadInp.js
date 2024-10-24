@@ -65,7 +65,7 @@ function txtToFrontendInputData(txt) {
             })
         }
     })
-
+    if (data.makings.length === 0) data.makings.push({ name: 'Normal', E: 4.8e6, A: 1, rho: 0, color: '#66ccff' })
     return data
 }
 
