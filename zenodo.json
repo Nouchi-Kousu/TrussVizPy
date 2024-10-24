@@ -1,0 +1,12 @@
+{
+    "title": "TrussVizPy",
+    "authors": [
+        {
+            "firstname": "Zhenyu",
+            "lastname": "Xing",
+            "affiliation": "Dalian University of Technology"
+        }
+    ],
+    "description": "TrussVizPy is an open source tool based on Python and React for the static analysis of planar trusses.",
+    "license": "MIT"
+}
