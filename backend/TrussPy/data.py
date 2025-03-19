@@ -1,4 +1,5 @@
 import math
+from typing import Literal, cast
 from .data_types import Calculation_Result_Data, Computational_Data, Frontend_Line, Visualization_Data, Line_Force, Line, Input_Data, Line_input, Frontend_Input_Data
 from scipy.spatial.distance import euclidean
 
@@ -114,39 +115,50 @@ def txt_to_frontend_input_data(file_path: str) -> Frontend_Input_Data:
     }
 
     with open(file_path, 'r') as f:
-        for line in f:
-            tokens = line.strip().split(',')
+        for idx, line in enumerate(f.readlines(), start=1):
+            tokens = [token.strip() for token in line.strip().split(',')]
+
             if tokens[0] == 'P':
                 # 解析点数据
-                assert len(tokens) == 5
+                Constraint_Type: Literal[0, 1, 2] = cast(Literal[0, 1, 2], int(tokens[3]))
+
+                assert len(tokens) == 5, f'行{idx}: 格式错误'
+                assert Constraint_Type in [0, 1, 2], f'行{idx}: 约束类型错误错误为{Constraint_Type}，应为Literal[0, 1, 2]'
+
                 data['points'].append({
                     'x': float(tokens[1]),
                     'y': float(tokens[2]),
-                    'Constraint_Type': int(tokens[3]),
+                    'Constraint_Type': Constraint_Type,
                     'theta': float(tokens[4])
                 })
+
             elif tokens[0] == 'L':
                 # 解析杆件数据
-                assert len(tokens) == 4
+                assert len(tokens) == 4, f'行{idx}: 格式错误'
                 data['lines'].append({
                     'points': [int(tokens[1]), int(tokens[2])],
                     'makingsIdx': int(tokens[3])
                 })
+
             elif tokens[0] == 'M':
                 # 解析材料数据
-                assert len(tokens) == 4
+                assert len(tokens) == 4, f'行{idx}: 格式错误'
                 data['makings'].append({
                     'E': float(tokens[1]),
                     'A': float(tokens[2]),
                     'rho': float(tokens[3])
                 })
+
             elif tokens[0] == 'F':
                 # 解析载荷数据
-                assert len(tokens) == 4
+                assert len(tokens) == 4, f'行{idx}: 格式错误'
                 data['loads'].append({
                     'point': int(tokens[1]),
                     'Fx': float(tokens[2]),
                     'Fy': float(tokens[3])
                 })
+
+            else:
+                raise ValueError(f'行{idx}: 未知类型')
 
     return data

@@ -8,25 +8,31 @@ TrussVizPy 是一款基于 Python 和 React 的开源工具，用于平面桁架
 
 #### 1. 安装依赖包：
 
-Python版本3.11.9，Node.js版本22.8.0
+Python版本3.11，使用[uv](https://github.com/astral-sh/uv)管理Python环境
 
 ```bash
-pip install -r ./backend/requirements.txt
-npm install -g sass
-npm install -g msgpack
-npm install -g react-kui
+cd ./react-frontend
+uv sync
+```
+
+Node版本22.13，使用yarn管理依赖
+
+```bash
+cd ./react-frontend
+yarn install
 ```
 
 #### 2. 启动服务：
 
 后端
 ```bash
-python ./backend/app.py
+cd ./react-frontend
+uv run app.py
 ```
 前端
 ```bash
 cd ./react-frontend
-npm start
+yarn start
 ```
 
 后端默认使用1224端口，测试环境可在`./react-frontend/src/page/Truss/draw/Right.js`中修改前端使用的服务器和端口号
